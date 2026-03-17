@@ -1,0 +1,44 @@
+{
+  "vision": {
+    "title": "더 쉽고, 더 빠르고, 더 투명한 S2B",
+    "description": "학교·교육기관과 공급업체 모두가 더욱 편리하게 이용할 수 있는 새로운 S2B를 만들어갑니다."
+  },
+  "changes": [
+    {
+      "id": 1,
+      "category": "UI/UX",
+      "title": "UI/UX 전면 개편",
+      "description": "사용자 중심의 직관적인 인터페이스로 개선됩니다."
+    },
+    {
+      "id": 2,
+      "category": "회원체계",
+      "title": "로그인 및 회원체계 변화",
+      "description": "간편 인증 도입 및 회원 정보 통합 관리 체계로 개편됩니다."
+    },
+    {
+      "id": 3,
+      "category": "계약절차",
+      "title": "계약 절차 단순화",
+      "description": "6개 계약 프로세스가 4개 핵심 서비스(견적정보·견적요청·안내공고·입찰)로 재편됩니다."
+    },
+    {
+      "id": 4,
+      "category": "전자서명",
+      "title": "전자서명·검증 방식 변경",
+      "description": "최신 전자서명 표준을 적용하여 보안성과 편의성을 동시에 강화합니다."
+    }
+  ],
+  "timeline": [
+    { "phase": "시스템 설계",  "period": "~2026.04", "status": "active"   },
+    { "phase": "시스템 구축",  "period": "~2026.09", "status": "upcoming" },
+    { "phase": "종합 테스트",  "period": "~2026.12", "status": "upcoming" },
+    { "phase": "프리오픈",     "period": "2026.12",  "status": "upcoming" },
+    { "phase": "시스템 오픈",  "period": "2027.01",  "status": "upcoming" },
+    { "phase": "안정화",       "period": "~2027.04", "status": "upcoming" }
+  ],
+  "organization": {
+    "client":      "발주기관명을 입력하세요",
+    "contractor":  "수행사명을 입력하세요"
+  }
+}

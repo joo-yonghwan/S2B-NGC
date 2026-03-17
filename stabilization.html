@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="오픈 안정화 참여 및 지원 - 버그 신고 및 처리 현황">
+  <title>오픈 안정화 | S2B NGC</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div id="header-mount"></div>
+
+  <main>
+    <div class="container">
+      <h1 class="page-title" id="program-name">오픈 안정화</h1>
+      <p class="page-desc" id="program-purpose">-</p>
+
+      <!-- 기간 배너 -->
+      <div class="card" style="background:var(--color-primary); color:#fff; padding:20px 24px; border:none; margin-bottom:32px; display:flex; gap:24px; align-items:center; flex-wrap:wrap;">
+        <div>
+          <div style="font-size:.8rem; opacity:.75; margin-bottom:4px;">운영 기간</div>
+          <div id="program-period" style="font-weight:700; font-size:1.1rem;">-</div>
+        </div>
+        <div style="flex:1; text-align:right;">
+          <span style="font-size:.8rem; opacity:.75;">공식 명칭은 의사결정 후 확정 예정입니다.</span>
+        </div>
+      </div>
+
+      <!-- 현황 통계 -->
+      <section>
+        <h2 class="section-title">처리 현황</h2>
+        <div class="stat-grid" id="stab-stats"></div>
+      </section>
+
+      <!-- 참여 방법 -->
+      <section>
+        <h2 class="section-title">참여 방법</h2>
+        <div class="card">
+          <div id="how-to-steps" style="display:flex; flex-direction:column; gap:16px;"></div>
+        </div>
+      </section>
+
+      <!-- 신고 유형 -->
+      <section>
+        <h2 class="section-title">신고 유형</h2>
+        <div class="card">
+          <ul id="report-categories" style="display:flex; flex-wrap:wrap; gap:10px;"></ul>
+        </div>
+      </section>
+
+      <!-- 지원 안내 -->
+      <section>
+        <h2 class="section-title">지원 채널</h2>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:16px;">
+          <a href="communication.html" class="card" style="display:block; text-align:center; padding:28px;">
+            <div style="font-size:2rem; margin-bottom:10px;">📝</div>
+            <div style="font-weight:700; margin-bottom:6px;">온라인 신고 접수</div>
+            <div style="font-size:.875rem; color:var(--color-text-sub);">커뮤니케이션 채널에서 접수</div>
+          </a>
+          <div class="card" style="text-align:center; padding:28px;">
+            <div style="font-size:2rem; margin-bottom:10px;">📞</div>
+            <div style="font-weight:700; margin-bottom:6px;">콜센터</div>
+            <div style="font-size:.875rem; color:var(--color-text-sub);">지원센터 안내 참고</div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div id="footer-mount"></div>
+
+  <script src="js/components.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const data = await loadData('data/stabilization.json');
+      if (!data) return;
+
+      const b = data.bugBounty;
+      document.getElementById('program-name').textContent    = b.programName;
+      document.getElementById('program-purpose').textContent = b.purpose;
+      document.getElementById('program-period').textContent  = `${b.period.start} ~ ${b.period.end}`;
+
+      // 통계
+      const s = data.stats;
+      renderStatCards('stab-stats', [
+        { label: '총 접수',          value: s.total,                unit: '건' },
+        { label: '처리 진행 중',     value: s.inProgress,           unit: '건' },
+        { label: '처리 완료',        value: s.completed,            unit: '건' },
+        { label: '참여 기관',        value: s.participatingOrgs,    unit: '개소' },
+        { label: '처리 완료율',      value: s.resolutionRate,       unit: '%' },
+      ]);
+
+      // 참여 방법
+      document.getElementById('how-to-steps').innerHTML = b.howToParticipate.map(s => `
+        <div style="display:flex; gap:16px; align-items:flex-start;">
+          <div style="width:32px; height:32px; border-radius:50%; background:var(--color-accent); color:#fff; font-weight:700; font-size:.875rem; display:flex; align-items:center; justify-content:center; flex-shrink:0;">${s.seq}</div>
+          <div>
+            <div style="font-weight:700; margin-bottom:4px;">${s.label}</div>
+            <div style="font-size:.875rem; color:var(--color-text-sub);">${s.desc}</div>
+          </div>
+        </div>
+      `).join('');
+
+      // 신고 유형
+      document.getElementById('report-categories').innerHTML = data.reportCategories.map(c => `
+        <li><span class="badge badge-notice" style="padding:6px 14px;">${c}</span></li>
+      `).join('');
+    });
+  </script>
+</body>
+</html>

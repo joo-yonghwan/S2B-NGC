@@ -1,0 +1,32 @@
+{
+  "notices": [
+    { "id": 1, "type": "urgent", "title": "긴급공지 제목을 입력하세요", "date": "2026-03-17" },
+    { "id": 2, "type": "notice", "title": "일반 공지 제목을 입력하세요", "date": "2026-03-10" }
+  ],
+  "projectProgress": {
+    "overall": 10,
+    "phases": [
+      { "name": "시스템 설계", "period": "~26.4월",  "status": "active",    "rate": 60 },
+      { "name": "시스템 구축", "period": "~26.9월",  "status": "upcoming",  "rate": 0  },
+      { "name": "종합 테스트", "period": "~26.12월", "status": "upcoming",  "rate": 0  },
+      { "name": "시스템 오픈", "period": "27.1월",   "status": "upcoming",  "rate": 0  },
+      { "name": "안정화",      "period": "~27.4월",  "status": "upcoming",  "rate": 0  }
+    ]
+  },
+  "ngcProgress": {
+    "phases": [
+      { "name": "기획안",         "period": "~26.3월", "status": "done"    },
+      { "name": "프로토타입",     "period": "~26.5월", "status": "active"  },
+      { "name": "1차 서비스 개시","period": "26.6월~", "status": "upcoming"},
+      { "name": "2차 서비스 개시","period": "27.1월~", "status": "upcoming"}
+    ]
+  },
+  "stats": {
+    "memberReregister":  { "current": 0,  "target": 40, "unit": "%" },
+    "productReregister": { "current": 0,  "target": 40, "unit": "%" },
+    "uatProgress":       { "current": 0,  "target": 90, "unit": "%" },
+    "bugBounty": {
+      "total": 0, "inProgress": 0, "completed": 0
+    }
+  }
+}

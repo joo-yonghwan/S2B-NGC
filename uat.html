@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="사용자 수락 테스트(UAT) 안내 - 일정, 참여 방법, 진행 현황">
+  <title>사용자테스트 | S2B NGC</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div id="header-mount"></div>
+
+  <main>
+    <div class="container">
+      <h1 class="page-title">사용자테스트 (UAT센터)</h1>
+      <p class="page-desc" id="uat-purpose">-</p>
+
+      <!-- 진행 현황 통계 -->
+      <section>
+        <h2 class="section-title">진행 현황</h2>
+        <div class="stat-grid" id="uat-stats"></div>
+      </section>
+
+      <!-- 일정 -->
+      <section>
+        <h2 class="section-title">테스트 일정</h2>
+        <div class="card" id="uat-schedule">
+          <div style="display:flex; gap:24px; flex-wrap:wrap; align-items:center;">
+            <div>
+              <div style="font-size:.8rem; color:var(--color-text-muted); margin-bottom:4px;">기간</div>
+              <div id="uat-period" style="font-weight:700; font-size:1.1rem;">-</div>
+            </div>
+            <div style="flex:1; min-width:200px;">
+              <div style="font-size:.8rem; color:var(--color-text-muted); margin-bottom:4px;">비고</div>
+              <div id="uat-note" style="font-size:.875rem; color:var(--color-text-sub);">-</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 참여 대상 -->
+      <section>
+        <h2 class="section-title">참여 대상 및 역할</h2>
+        <div id="participant-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:16px;"></div>
+        <div class="card" style="margin-top:16px; background:var(--color-bg);">
+          <div style="display:flex; gap:32px; flex-wrap:wrap; text-align:center;">
+            <div>
+              <div style="font-size:.8rem; color:var(--color-text-muted);">핵심 사용자 목표</div>
+              <div id="target-core" style="font-size:1.5rem; font-weight:800; color:var(--color-primary);">-</div>
+            </div>
+            <div>
+              <div style="font-size:.8rem; color:var(--color-text-muted);">전체 대상자 목표</div>
+              <div id="target-all" style="font-size:1.5rem; font-weight:800; color:var(--color-primary);">-</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 테스트 범위 -->
+      <section>
+        <h2 class="section-title">테스트 범위</h2>
+        <div class="card">
+          <ul id="test-scope" style="display:flex; flex-wrap:wrap; gap:10px;"></ul>
+        </div>
+      </section>
+
+      <!-- 피드백 프로세스 -->
+      <section>
+        <h2 class="section-title">피드백 수집 및 반영</h2>
+        <div class="card">
+          <div style="margin-bottom:16px; font-size:.875rem; color:var(--color-text-sub);">
+            <span>수집 방법: </span><span id="collect-method">-</span>
+          </div>
+          <div class="step-list" id="feedback-steps" style="display:flex; flex-direction:column; gap:16px;"></div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <div id="footer-mount"></div>
+
+  <script src="js/components.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const data = await loadData('data/uat.json');
+      if (!data) return;
+
+      document.getElementById('uat-purpose').textContent = data.overview.purpose;
+      document.getElementById('uat-period').textContent  = `${data.schedule.start} ~ ${data.schedule.end}`;
+      document.getElementById('uat-note').textContent    = data.schedule.note;
+      document.getElementById('collect-method').textContent = data.feedback.collectMethod;
+      document.getElementById('target-core').textContent = `${data.participants.targetRate.core}%`;
+      document.getElementById('target-all').textContent  = `${data.participants.targetRate.all}%`;
+
+      // 통계
+      const s = data.stats;
+      renderStatCards('uat-stats', [
+        { label: '테스트 진행률',  value: s.progressRate,      unit: '%' },
+        { label: '참여 기관',      value: s.participatingOrgs, unit: '개소' },
+        { label: '참여 인원',      value: s.participants,      unit: '명' },
+        { label: '발견 결함',      value: s.defectsFound,      unit: '건' },
+        { label: '처리 완료',      value: s.defectsResolved,   unit: '건' },
+        { label: '결함 처리율',    value: s.resolutionRate,    unit: '%' },
+      ]);
+
+      // 참여 대상
+      document.getElementById('participant-grid').innerHTML = data.participants.groups.map(g => `
+        <div class="card">
+          <h3 style="font-weight:700; margin-bottom:6px;">${g.name}</h3>
+          <p style="font-size:.875rem; color:var(--color-text-sub);">${g.role}</p>
+        </div>
+      `).join('');
+
+      // 테스트 범위
+      document.getElementById('test-scope').innerHTML = data.testScope.map(t => `
+        <li><span class="badge badge-info" style="padding:6px 14px;">${t}</span></li>
+      `).join('');
+
+      // 피드백 프로세스
+      document.getElementById('feedback-steps').innerHTML = data.feedback.process.map(p => `
+        <div style="display:flex; gap:16px; align-items:flex-start;">
+          <div style="width:32px; height:32px; border-radius:50%; background:var(--color-primary); color:#fff; font-weight:700; font-size:.875rem; display:flex; align-items:center; justify-content:center; flex-shrink:0;">${p.seq}</div>
+          <div>
+            <div style="font-weight:700; margin-bottom:4px;">${p.step}</div>
+            <div style="font-size:.875rem; color:var(--color-text-sub);">${p.desc}</div>
+          </div>
+        </div>
+      `).join('');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="S2B 재구축 변화관리 플랫폼 - Next Guide Center">
+  <title>메인 | S2B NGC</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div id="header-mount"></div>
+
+  <main>
+    <div class="container">
+
+      <!-- 긴급공지 -->
+      <div id="urgent-notices"></div>
+
+      <!-- 히어로 -->
+      <section class="card" style="text-align:center; padding: 48px 24px; background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-lt) 100%); color:#fff; border:none;">
+        <p style="font-size:.85rem; opacity:.8; margin-bottom:8px;">S2B 재구축 변화관리 플랫폼</p>
+        <h1 style="font-size:2rem; font-weight:800; margin-bottom:16px;">S2B Next Guide Center</h1>
+        <p style="font-size:1rem; opacity:.9; max-width:540px; margin:0 auto 28px;">
+          더 쉽고, 더 빠르고, 더 투명한 S2B를 향한 여정.<br>
+          새로운 S2B를 미리 만나보고, 변화를 함께 준비하세요.
+        </p>
+        <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+          <a href="preview.html"  class="btn" style="background:#fff; color:var(--color-primary);">미리보기 보러가기</a>
+          <a href="preopen.html" class="btn" style="background:var(--color-accent); color:#fff;">프리오픈 안내</a>
+        </div>
+      </section>
+
+      <!-- 사업 진행 현황 -->
+      <section>
+        <h2 class="section-title">사업 진행 현황</h2>
+        <div class="card">
+          <div style="margin-bottom:8px; font-size:.9rem; color:var(--color-text-sub);">
+            전체 공정률 <strong id="overall-rate">-</strong>%
+          </div>
+          <div id="phase-progress"></div>
+        </div>
+      </section>
+
+      <!-- 참여 현황 통계 -->
+      <section>
+        <h2 class="section-title">참여 현황</h2>
+        <div class="stat-grid" id="stat-grid"></div>
+      </section>
+
+      <!-- S2B NGC 추진 현황 -->
+      <section>
+        <h2 class="section-title">NGC 추진 현황</h2>
+        <div class="card">
+          <div class="timeline" id="ngc-timeline"></div>
+        </div>
+      </section>
+
+      <!-- 바로가기 카드 -->
+      <section>
+        <h2 class="section-title">주요 메뉴</h2>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:16px;">
+          <a href="s2b-next.html" class="card" style="display:block; text-decoration:none;">
+            <div style="font-size:1.5rem; margin-bottom:10px;">📋</div>
+            <h3 style="font-weight:700; margin-bottom:6px; color:var(--color-primary);">S2B Next</h3>
+            <p style="font-size:.85rem; color:var(--color-text-sub);">재구축 사업 소개 및 주요 변화 포인트</p>
+          </a>
+          <a href="preview.html" class="card" style="display:block; text-decoration:none;">
+            <div style="font-size:1.5rem; margin-bottom:10px;">🖥️</div>
+            <h3 style="font-weight:700; margin-bottom:6px; color:var(--color-primary);">미리보기</h3>
+            <p style="font-size:.85rem; color:var(--color-text-sub);">신규 S2B 서비스를 인터렉티브 가이드로 체험</p>
+          </a>
+          <a href="preopen.html" class="card" style="display:block; text-decoration:none;">
+            <div style="font-size:1.5rem; margin-bottom:10px;">📝</div>
+            <h3 style="font-weight:700; margin-bottom:6px; color:var(--color-primary);">프리오픈 가이드</h3>
+            <p style="font-size:.85rem; color:var(--color-text-sub);">회원 재가입 및 물품 재등록 안내</p>
+          </a>
+          <a href="uat.html" class="card" style="display:block; text-decoration:none;">
+            <div style="font-size:1.5rem; margin-bottom:10px;">🔍</div>
+            <h3 style="font-weight:700; margin-bottom:6px; color:var(--color-primary);">사용자테스트</h3>
+            <p style="font-size:.85rem; color:var(--color-text-sub);">UAT 일정, 참여 방법, 진행 현황</p>
+          </a>
+          <a href="stabilization.html" class="card" style="display:block; text-decoration:none;">
+            <div style="font-size:1.5rem; margin-bottom:10px;">🛠️</div>
+            <h3 style="font-weight:700; margin-bottom:6px; color:var(--color-primary);">오픈 안정화</h3>
+            <p style="font-size:.85rem; color:var(--color-text-sub);">버그·오류 신고 및 처리 현황</p>
+          </a>
+          <a href="communication.html" class="card" style="display:block; text-decoration:none;">
+            <div style="font-size:1.5rem; margin-bottom:10px;">📢</div>
+            <h3 style="font-weight:700; margin-bottom:6px; color:var(--color-primary);">커뮤니케이션</h3>
+            <p style="font-size:.85rem; color:var(--color-text-sub);">공지사항, FAQ, 매뉴얼, 지원센터</p>
+          </a>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <div id="footer-mount"></div>
+
+  <script src="js/components.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const data = await loadData('data/main.json');
+      if (!data) return;
+
+      // 긴급공지
+      const urgentEl = document.getElementById('urgent-notices');
+      const urgent = data.notices.filter(n => n.type === 'urgent');
+      urgentEl.innerHTML = urgent.map(n => `
+        <div class="urgent-banner">
+          <span class="urgent-icon">⚠️</span>
+          <span class="urgent-text">${n.title}</span>
+          <span class="urgent-date">${formatDate(n.date)}</span>
+        </div>
+      `).join('');
+
+      // 전체 공정률
+      document.getElementById('overall-rate').textContent = data.projectProgress.overall;
+
+      // 단계별 진행률
+      const phaseEl = document.getElementById('phase-progress');
+      phaseEl.innerHTML = data.projectProgress.phases.map(p => `
+        <div class="progress-wrap">
+          <div class="progress-label">
+            <span>${p.name} <span style="font-size:.8rem; color:var(--color-text-muted);">(${p.period})</span></span>
+            <span>${p.rate}%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill ${p.status === 'active' ? 'accent' : p.status === 'done' ? 'success' : ''}"
+                 style="width:${p.rate}%"></div>
+          </div>
+        </div>
+      `).join('');
+
+      // 통계 카드
+      const s = data.stats;
+      renderStatCards('stat-grid', [
+        { label: '회원 재가입률',  value: s.memberReregister.current,  unit: `목표 ${s.memberReregister.target}%`,  color: '' },
+        { label: '물품 재등록률',  value: s.productReregister.current, unit: `목표 ${s.productReregister.target}%`, color: '' },
+        { label: 'UAT 참여율',     value: s.uatProgress.current,       unit: `목표 ${s.uatProgress.target}%`,       color: '' },
+        { label: '버그 접수',      value: s.bugBounty.total,           unit: `처리완료 ${s.bugBounty.completed}건`, color: '' },
+      ]);
+
+      // NGC 타임라인
+      const tlEl = document.getElementById('ngc-timeline');
+      tlEl.innerHTML = data.ngcProgress.phases.map(p => `
+        <div class="timeline-item ${p.status}">
+          <div class="timeline-period">${p.period}</div>
+          <div class="timeline-label">${p.name}</div>
+        </div>
+      `).join('');
+    });
+  </script>
+</body>
+</html>

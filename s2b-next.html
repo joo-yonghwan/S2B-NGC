@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="S2B 재구축 사업 소개 - 비전, 주요 변화, 추진 일정">
+  <title>S2B Next | S2B NGC</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div id="header-mount"></div>
+
+  <main>
+    <div class="container">
+      <h1 class="page-title">S2B Next</h1>
+      <p class="page-desc">재구축 사업의 목적과 방향, 주요 변화 포인트를 소개합니다.</p>
+
+      <!-- 비전 -->
+      <section>
+        <h2 class="section-title">비전 및 목표</h2>
+        <div class="card" style="text-align:center; padding:36px;">
+          <div id="vision-title" style="font-size:1.6rem; font-weight:800; color:var(--color-primary); margin-bottom:12px;">-</div>
+          <div id="vision-desc" style="color:var(--color-text-sub); font-size:.95rem; max-width:500px; margin:0 auto;"></div>
+        </div>
+      </section>
+
+      <!-- 주요 변화 -->
+      <section>
+        <h2 class="section-title">주요 변화 포인트</h2>
+        <div id="changes-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:16px;"></div>
+      </section>
+
+      <!-- 추진 일정 타임라인 -->
+      <section>
+        <h2 class="section-title">추진 일정</h2>
+        <div class="card">
+          <div class="timeline" id="project-timeline"></div>
+        </div>
+      </section>
+
+      <!-- 추진 체계 -->
+      <section>
+        <h2 class="section-title">추진 체계</h2>
+        <div class="card" id="org-section">
+          <div style="display:flex; gap:24px; flex-wrap:wrap;">
+            <div style="flex:1; min-width:180px;">
+              <div style="font-size:.8rem; color:var(--color-text-muted); margin-bottom:4px;">발주기관</div>
+              <div id="org-client" style="font-weight:600;">-</div>
+            </div>
+            <div style="flex:1; min-width:180px;">
+              <div style="font-size:.8rem; color:var(--color-text-muted); margin-bottom:4px;">수행사</div>
+              <div id="org-contractor" style="font-weight:600;">-</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 프리오픈/UAT 안내 요약 -->
+      <section>
+        <h2 class="section-title">프리오픈 vs 사용자테스트</h2>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,1fr)); gap:16px;">
+          <div class="card" style="border-top:4px solid var(--color-accent);">
+            <h3 style="font-weight:700; margin-bottom:8px; color:var(--color-accent);">프리오픈</h3>
+            <p style="font-size:.9rem; color:var(--color-text-sub);">
+              <strong>목적:</strong> 데이터 이관<br>
+              <strong>대상:</strong> 수요기관, 공급업체<br>
+              <strong>주요 활동:</strong> 회원 재가입, 물품 재등록
+            </p>
+            <a href="preopen.html" class="btn btn-outline" style="margin-top:16px; font-size:.85rem; padding:8px 16px;">프리오픈 가이드 →</a>
+          </div>
+          <div class="card" style="border-top:4px solid var(--color-primary-lt);">
+            <h3 style="font-weight:700; margin-bottom:8px; color:var(--color-primary);">사용자테스트 (UAT)</h3>
+            <p style="font-size:.9rem; color:var(--color-text-sub);">
+              <strong>목적:</strong> 시스템 품질 검증<br>
+              <strong>대상:</strong> 강사진, 패널단, 수요기관, 공급업체<br>
+              <strong>주요 활동:</strong> 시나리오 기반 테스트, 결함 제보
+            </p>
+            <a href="uat.html" class="btn btn-outline" style="margin-top:16px; font-size:.85rem; padding:8px 16px;">UAT 안내 →</a>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div id="footer-mount"></div>
+
+  <script src="js/components.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const data = await loadData('data/s2b-next.json');
+      if (!data) return;
+
+      document.getElementById('vision-title').textContent = data.vision.title;
+      document.getElementById('vision-desc').textContent  = data.vision.description;
+      document.getElementById('org-client').textContent     = data.organization.client;
+      document.getElementById('org-contractor').textContent = data.organization.contractor;
+
+      // 변화 포인트
+      document.getElementById('changes-grid').innerHTML = data.changes.map(c => `
+        <div class="card">
+          <span class="badge badge-info" style="margin-bottom:10px;">${c.category}</span>
+          <h3 style="font-weight:700; margin-bottom:8px;">${c.title}</h3>
+          <p style="font-size:.875rem; color:var(--color-text-sub);">${c.description}</p>
+        </div>
+      `).join('');
+
+      // 타임라인
+      document.getElementById('project-timeline').innerHTML = data.timeline.map(t => `
+        <div class="timeline-item ${t.status}">
+          <div class="timeline-period">${t.period}</div>
+          <div class="timeline-label">${t.phase}</div>
+        </div>
+      `).join('');
+    });
+  </script>
+</body>
+</html>

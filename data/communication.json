@@ -1,0 +1,52 @@
+{
+  "notices": [
+    { "id": 1, "type": "urgent", "title": "긴급공지 예시: 프리오픈 일정 안내", "date": "2026-03-17", "content": "공지 내용을 입력하세요." },
+    { "id": 2, "type": "notice", "title": "S2B NGC 서비스 오픈 안내",          "date": "2026-03-10", "content": "공지 내용을 입력하세요." },
+    { "id": 3, "type": "notice", "title": "사용자 매뉴얼 업데이트 안내",        "date": "2026-03-05", "content": "공지 내용을 입력하세요." }
+  ],
+  "faq": [
+    {
+      "id": 1, "category": "미리보기",
+      "question": "미리보기는 실제 S2B 시스템인가요?",
+      "answer": "아닙니다. 미리보기는 신규 S2B의 화면과 흐름을 사전에 학습할 수 있도록 제작된 가이드 전용 환경입니다. 실제 데이터 입력·저장은 불가능합니다."
+    },
+    {
+      "id": 2, "category": "프리오픈",
+      "question": "프리오픈 기간 내 재가입을 완료하지 못하면 어떻게 되나요?",
+      "answer": "미이행 시 불이익 여부 및 후속 처리 방안은 현업 의사결정 후 안내드릴 예정입니다."
+    },
+    {
+      "id": 3, "category": "사용자테스트",
+      "question": "사용자테스트(UAT) 참여 방법은 어떻게 되나요?",
+      "answer": "UAT 참여 대상자에게 개별 안내 공문이 발송됩니다. 상세 일정 및 방법은 UAT센터 메뉴에서 확인하실 수 있습니다."
+    },
+    {
+      "id": 4, "category": "오픈안정화",
+      "question": "오픈 후 오류를 발견하면 어디에 신고하나요?",
+      "answer": "NGC 내 오픈 안정화 메뉴의 신고 양식 또는 콜센터를 통해 접수하실 수 있습니다."
+    }
+  ],
+  "education": [
+    { "id": 1, "type": "온라인 사전교육", "title": "수요기관 담당자 온라인 교육", "date": "2026-11", "target": "수요기관",  "status": "예정", "url": "" },
+    { "id": 2, "type": "웨비나",          "title": "공급업체 대상 웨비나",         "date": "2026-11", "target": "공급업체", "status": "예정", "url": "" },
+    { "id": 3, "type": "설명회",          "title": "강사진 대상 설명회",           "date": "2026-10", "target": "강사진",   "status": "예정", "url": "" }
+  ],
+  "manuals": [
+    { "id": 1, "title": "수요기관 이용 매뉴얼",  "filename": "manual-school.pdf",    "size": "-" },
+    { "id": 2, "title": "공급업체 이용 매뉴얼",  "filename": "manual-supplier.pdf",  "size": "-" },
+    { "id": 3, "title": "프리오픈 안내 가이드",  "filename": "guide-preopen.pdf",    "size": "-" }
+  ],
+  "support": {
+    "projectTeam": {
+      "name":  "S2B 재구축 프로젝트팀",
+      "phone": "02-000-0000",
+      "email": "s2b-project@example.com",
+      "hours": "평일 09:00 ~ 18:00"
+    },
+    "callCenter": {
+      "name":  "S2B 고객센터",
+      "phone": "1588-0000",
+      "hours": "평일 09:00 ~ 18:00"
+    }
+  }
+}

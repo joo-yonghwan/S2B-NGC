@@ -1,0 +1,48 @@
+{
+  "overview": {
+    "title": "사용자 수락 테스트 (UAT)",
+    "purpose": "실제 사용자가 신규 S2B 시스템을 직접 테스트하여 품질을 검증하는 최종 단계입니다.",
+    "description": "인당 20~30개 시나리오 기반으로 진행되며, 발견된 결함은 즉시 개발팀에 전달·반영됩니다."
+  },
+  "schedule": {
+    "start": "2026-10",
+    "end":   "2026-12",
+    "note":  "일정은 사업 진행에 따라 변경될 수 있습니다."
+  },
+  "participants": {
+    "groups": [
+      { "name": "강사진",       "role": "계약 프로세스 전 단계 테스트", "count": 0 },
+      { "name": "패널단",       "role": "물품 검색·비교·계약 테스트",   "count": 0 },
+      { "name": "수요기관 담당자", "role": "발주·계약·정산 테스트",     "count": 0 },
+      { "name": "공급업체",     "role": "물품 등록·입찰·계약 테스트",   "count": 0 }
+    ],
+    "total": 0,
+    "targetRate": { "core": 90, "all": 60, "unit": "%" }
+  },
+  "testScope": [
+    "견적정보 서비스",
+    "견적요청 서비스",
+    "안내공고 서비스",
+    "입찰 서비스",
+    "회원 가입·로그인",
+    "물품 등록·관리"
+  ],
+  "feedback": {
+    "collectMethod": "온라인 설문(구글폼), 현장 인터뷰",
+    "types": ["기능 오류", "UX 불편사항", "데이터 오류", "성능 이슈"],
+    "process": [
+      { "seq": 1, "step": "피드백 수집",   "desc": "테스트 종료 후 즉시 제출" },
+      { "seq": 2, "step": "분류·우선순위", "desc": "개발팀 검토 및 중요도 분류" },
+      { "seq": 3, "step": "개발 반영",     "desc": "수정 개발 및 재검증" },
+      { "seq": 4, "step": "결과 공유",     "desc": "반영 결과 참여자에게 피드백" }
+    ]
+  },
+  "stats": {
+    "progressRate":      0,
+    "participatingOrgs": 0,
+    "participants":      0,
+    "defectsFound":      0,
+    "defectsResolved":   0,
+    "resolutionRate":    0
+  }
+}

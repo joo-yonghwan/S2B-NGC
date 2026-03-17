@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="프리오픈 가이드 - 회원 재가입 및 물품 재등록 안내">
+  <title>프리오픈 가이드 | S2B NGC</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .step-list { display: flex; flex-direction: column; gap: 16px; }
+    .step-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .step-num {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      color: #fff;
+      font-weight: 700;
+      font-size: .875rem;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-content { flex: 1; }
+    .step-label { font-weight: 700; margin-bottom: 4px; }
+    .step-desc  { font-size: .875rem; color: var(--color-text-sub); }
+
+    .target-tabs { display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 2px solid var(--color-border); }
+    .target-tab {
+      padding: 10px 24px; font-size: .95rem; font-weight: 600;
+      color: var(--color-text-muted);
+      border-bottom: 2px solid transparent; margin-bottom: -2px;
+      cursor: pointer; transition: all .15s;
+    }
+    .target-tab.active { color: var(--color-primary); border-bottom-color: var(--color-primary); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+  </style>
+</head>
+<body>
+
+  <div id="header-mount"></div>
+
+  <main>
+    <div class="container">
+      <h1 class="page-title">프리오픈 가이드</h1>
+      <p class="page-desc" id="preopen-purpose">-</p>
+
+      <!-- D-Day 배너 -->
+      <div class="card" style="background:var(--color-primary); color:#fff; text-align:center; padding:28px; margin-bottom:32px; border:none;">
+        <div style="font-size:.85rem; opacity:.8; margin-bottom:6px;">프리오픈 기간</div>
+        <div id="preopen-period" style="font-size:1.4rem; font-weight:800;">-</div>
+        <div style="font-size:.875rem; opacity:.75; margin-top:6px;" id="dday-base">-</div>
+      </div>
+
+      <!-- 대상별 탭 -->
+      <div class="target-tabs">
+        <button class="target-tab active" data-tab="member">회원 재가입</button>
+        <button class="target-tab" data-tab="product">물품 재등록</button>
+        <button class="target-tab" data-tab="checklist">체크리스트</button>
+      </div>
+
+      <!-- 회원 재가입 -->
+      <div class="tab-panel active" id="tab-member">
+        <h2 class="section-title" id="member-title">-</h2>
+        <div class="card" style="margin-bottom:20px;">
+          <div style="margin-bottom:12px;">
+            <span style="font-size:.85rem; color:var(--color-text-muted);">대상: </span>
+            <span id="member-targets" style="font-weight:600; font-size:.9rem;"></span>
+          </div>
+          <p id="member-desc" style="font-size:.9rem; color:var(--color-text-sub); margin-bottom:20px;"></p>
+          <div class="step-list" id="member-steps"></div>
+        </div>
+      </div>
+
+      <!-- 물품 재등록 -->
+      <div class="tab-panel" id="tab-product">
+        <h2 class="section-title" id="product-title">-</h2>
+        <div class="card" style="margin-bottom:20px;">
+          <div style="margin-bottom:12px;">
+            <span style="font-size:.85rem; color:var(--color-text-muted);">대상: </span>
+            <span id="product-targets" style="font-weight:600; font-size:.9rem;"></span>
+          </div>
+          <p id="product-desc" style="font-size:.9rem; color:var(--color-text-sub); margin-bottom:20px;"></p>
+          <div class="step-list" id="product-steps"></div>
+        </div>
+      </div>
+
+      <!-- 체크리스트 -->
+      <div class="tab-panel" id="tab-checklist">
+        <h2 class="section-title">사전 준비 체크리스트</h2>
+        <div class="card">
+          <p style="font-size:.875rem; color:var(--color-text-sub); margin-bottom:20px;">
+            프리오픈 참여 전 아래 항목을 미리 확인하고 준비해 주세요.
+          </p>
+          <div class="checklist" id="checklist"></div>
+        </div>
+      </div>
+
+      <!-- 인센티브 -->
+      <section>
+        <h2 class="section-title">참여 혜택</h2>
+        <div class="card">
+          <ul id="incentives" style="display:flex; flex-direction:column; gap:10px;"></ul>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <div id="footer-mount"></div>
+
+  <script src="js/components.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // 탭 전환
+    document.querySelectorAll('.target-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.target-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+      });
+    });
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const data = await loadData('data/preopen.json');
+      if (!data) return;
+
+      document.getElementById('preopen-purpose').textContent = data.overview.purpose;
+      document.getElementById('preopen-period').textContent =
+        `${data.overview.period.start} ~ ${data.overview.period.end}`;
+      document.getElementById('dday-base').textContent = data.overview.period.dDayBase;
+
+      // 회원 재가입
+      document.getElementById('member-title').textContent   = data.memberReregister.title;
+      document.getElementById('member-targets').textContent = data.memberReregister.targets.join(', ');
+      document.getElementById('member-desc').textContent    = data.memberReregister.description;
+      document.getElementById('member-steps').innerHTML = data.memberReregister.steps.map(s => `
+        <div class="step-item">
+          <div class="step-num">${s.seq}</div>
+          <div class="step-content">
+            <div class="step-label">${s.label}</div>
+            <div class="step-desc">${s.desc}</div>
+          </div>
+        </div>
+      `).join('');
+
+      // 물품 재등록
+      document.getElementById('product-title').textContent   = data.productReregister.title;
+      document.getElementById('product-targets').textContent = data.productReregister.targets.join(', ');
+      document.getElementById('product-desc').textContent    = data.productReregister.description;
+      document.getElementById('product-steps').innerHTML = data.productReregister.steps.map(s => `
+        <div class="step-item">
+          <div class="step-num">${s.seq}</div>
+          <div class="step-content">
+            <div class="step-label">${s.label}</div>
+            <div class="step-desc">${s.desc}</div>
+          </div>
+        </div>
+      `).join('');
+
+      // 체크리스트
+      document.getElementById('checklist').innerHTML = data.checklist.map(c => `
+        <label class="checklist-item">
+          <input type="checkbox">
+          <span><span class="badge badge-info" style="margin-right:6px;">${c.category}</span>${c.item}</span>
+        </label>
+      `).join('');
+
+      // 인센티브
+      document.getElementById('incentives').innerHTML = data.incentives.map(i => `
+        <li style="display:flex; gap:8px; align-items:flex-start; font-size:.9rem;">
+          <span style="color:var(--color-success); font-weight:700; flex-shrink:0;">✓</span>
+          <span>${i}</span>
+        </li>
+      `).join('');
+    });
+  </script>
+</body>
+</html>

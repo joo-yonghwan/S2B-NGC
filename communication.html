@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="커뮤니케이션 채널 - 공지사항, FAQ, 교육일정, 매뉴얼, 지원센터">
+  <title>커뮤니케이션 | S2B NGC</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .comm-tabs { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 28px; border-bottom: 2px solid var(--color-border); }
+    .comm-tab {
+      padding: 10px 22px; font-size: .9rem; font-weight: 600;
+      color: var(--color-text-muted);
+      border-bottom: 2px solid transparent; margin-bottom: -2px;
+      cursor: pointer; transition: all .15s; white-space: nowrap;
+    }
+    .comm-tab.active { color: var(--color-primary); border-bottom-color: var(--color-primary); }
+    .comm-panel { display: none; }
+    .comm-panel.active { display: block; }
+
+    .edu-table { width: 100%; border-collapse: collapse; font-size: .875rem; }
+    .edu-table th { background: var(--color-bg); padding: 10px 14px; text-align:left; font-weight:600; border-bottom: 2px solid var(--color-border); }
+    .edu-table td { padding: 12px 14px; border-bottom: 1px solid var(--color-border); vertical-align: top; }
+    .edu-table tr:last-child td { border-bottom: none; }
+
+    .manual-list { display: flex; flex-direction: column; gap: 8px; }
+    .manual-item {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 14px 16px;
+      border: 1px solid var(--color-border); border-radius: var(--radius-md);
+      background: var(--color-surface);
+    }
+    .manual-info { display: flex; align-items: center; gap: 10px; flex: 1; }
+    .manual-icon { font-size: 1.4rem; }
+    .manual-title { font-weight: 600; font-size: .9rem; }
+    .manual-size  { font-size: .8rem; color: var(--color-text-muted); }
+  </style>
+</head>
+<body>
+
+  <div id="header-mount"></div>
+
+  <main>
+    <div class="container">
+      <h1 class="page-title">커뮤니케이션 채널</h1>
+      <p class="page-desc">공지사항, FAQ, 교육일정, 매뉴얼, 지원센터 정보를 한곳에서 확인하세요.</p>
+
+      <div class="comm-tabs">
+        <button class="comm-tab active" data-tab="notice">공지사항</button>
+        <button class="comm-tab" data-tab="faq">FAQ</button>
+        <button class="comm-tab" data-tab="education">교육·설명회</button>
+        <button class="comm-tab" data-tab="manual">사용자 매뉴얼</button>
+        <button class="comm-tab" data-tab="support">지원센터</button>
+      </div>
+
+      <!-- 공지사항 -->
+      <div class="comm-panel active" id="panel-notice">
+        <div class="card" id="notice-list-wrap">
+          <div class="notice-list" id="notice-list"></div>
+        </div>
+      </div>
+
+      <!-- FAQ -->
+      <div class="comm-panel" id="panel-faq">
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;" id="faq-category-filter">
+          <button class="preview-nav-btn active" data-cat="all" style="border-radius:4px; padding:6px 14px; border:1.5px solid var(--color-border); font-size:.85rem; font-weight:600; color:var(--color-text-sub); background:var(--color-surface); cursor:pointer;">전체</button>
+        </div>
+        <div id="faq-container"></div>
+      </div>
+
+      <!-- 교육·설명회 -->
+      <div class="comm-panel" id="panel-education">
+        <div class="card" style="overflow-x:auto;">
+          <table class="edu-table">
+            <thead>
+              <tr>
+                <th>구분</th><th>제목</th><th>일정</th><th>대상</th><th>상태</th>
+              </tr>
+            </thead>
+            <tbody id="edu-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 사용자 매뉴얼 -->
+      <div class="comm-panel" id="panel-manual">
+        <div class="manual-list" id="manual-list"></div>
+      </div>
+
+      <!-- 지원센터 -->
+      <div class="comm-panel" id="panel-support">
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,1fr)); gap:16px;">
+          <div class="card">
+            <h3 style="font-weight:700; margin-bottom:16px; color:var(--color-primary);">프로젝트팀</h3>
+            <dl style="display:flex; flex-direction:column; gap:10px; font-size:.9rem;">
+              <div style="display:flex; gap:12px;">
+                <dt style="color:var(--color-text-muted); flex-shrink:0; width:50px;">기관명</dt>
+                <dd id="team-name" style="font-weight:600;"></dd>
+              </div>
+              <div style="display:flex; gap:12px;">
+                <dt style="color:var(--color-text-muted); flex-shrink:0; width:50px;">전화</dt>
+                <dd id="team-phone"></dd>
+              </div>
+              <div style="display:flex; gap:12px;">
+                <dt style="color:var(--color-text-muted); flex-shrink:0; width:50px;">이메일</dt>
+                <dd id="team-email"></dd>
+              </div>
+              <div style="display:flex; gap:12px;">
+                <dt style="color:var(--color-text-muted); flex-shrink:0; width:50px;">운영</dt>
+                <dd id="team-hours"></dd>
+              </div>
+            </dl>
+          </div>
+          <div class="card">
+            <h3 style="font-weight:700; margin-bottom:16px; color:var(--color-primary);">고객센터</h3>
+            <dl style="display:flex; flex-direction:column; gap:10px; font-size:.9rem;">
+              <div style="display:flex; gap:12px;">
+                <dt style="color:var(--color-text-muted); flex-shrink:0; width:50px;">기관명</dt>
+                <dd id="cc-name" style="font-weight:600;"></dd>
+              </div>
+              <div style="display:flex; gap:12px;">
+                <dt style="color:var(--color-text-muted); flex-shrink:0; width:50px;">전화</dt>
+                <dd id="cc-phone"></dd>
+              </div>
+              <div style="display:flex; gap:12px;">
+                <dt style="color:var(--color-text-muted); flex-shrink:0; width:50px;">운영</dt>
+                <dd id="cc-hours"></dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="footer-mount"></div>
+
+  <script src="js/components.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // 탭 전환
+    document.querySelectorAll('.comm-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.comm-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.comm-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+      });
+    });
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const data = await loadData('data/communication.json');
+      if (!data) return;
+
+      // 공지사항
+      renderNoticeList('notice-list', data.notices, 20);
+
+      // FAQ
+      const categories = ['all', ...new Set(data.faq.map(f => f.category))];
+      const filterEl = document.getElementById('faq-category-filter');
+      filterEl.innerHTML = categories.map(c => `
+        <button class="comm-filter-btn ${c === 'all' ? 'active' : ''}"
+                data-cat="${c}"
+                style="padding:6px 14px; border:1.5px solid var(--color-border); border-radius:4px; font-size:.85rem; font-weight:600; color:var(--color-text-sub); background:var(--color-surface); cursor:pointer;">
+          ${c === 'all' ? '전체' : c}
+        </button>
+      `).join('');
+
+      function renderFilteredFAQ(cat) {
+        const items = cat === 'all' ? data.faq : data.faq.filter(f => f.category === cat);
+        renderFAQ('faq-container', items);
+      }
+      renderFilteredFAQ('all');
+
+      filterEl.querySelectorAll('.comm-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          filterEl.querySelectorAll('.comm-filter-btn').forEach(b => {
+            b.style.background = 'var(--color-surface)';
+            b.style.color = 'var(--color-text-sub)';
+            b.style.borderColor = 'var(--color-border)';
+          });
+          btn.style.background = 'var(--color-primary)';
+          btn.style.color = '#fff';
+          btn.style.borderColor = 'var(--color-primary)';
+          renderFilteredFAQ(btn.dataset.cat);
+        });
+      });
+
+      // 교육
+      document.getElementById('edu-tbody').innerHTML = data.education.map(e => `
+        <tr>
+          <td><span class="badge badge-info">${e.type}</span></td>
+          <td>${e.title}</td>
+          <td>${e.date}</td>
+          <td>${e.target}</td>
+          <td><span class="badge badge-notice">${e.status}</span></td>
+        </tr>
+      `).join('');
+
+      // 매뉴얼
+      document.getElementById('manual-list').innerHTML = data.manuals.map(m => `
+        <div class="manual-item">
+          <div class="manual-info">
+            <span class="manual-icon">📄</span>
+            <div>
+              <div class="manual-title">${m.title}</div>
+              <div class="manual-size">${m.size}</div>
+            </div>
+          </div>
+          <a href="assets/manuals/${m.filename}" download
+             class="btn btn-outline" style="font-size:.8rem; padding:6px 14px;">
+            다운로드
+          </a>
+        </div>
+      `).join('');
+
+      // 지원센터
+      const pt = data.support.projectTeam;
+      const cc = data.support.callCenter;
+      document.getElementById('team-name').textContent  = pt.name;
+      document.getElementById('team-phone').textContent = pt.phone;
+      document.getElementById('team-email').textContent = pt.email;
+      document.getElementById('team-hours').textContent = pt.hours;
+      document.getElementById('cc-name').textContent    = cc.name;
+      document.getElementById('cc-phone').textContent   = cc.phone;
+      document.getElementById('cc-hours').textContent   = cc.hours;
+    });
+  </script>
+</body>
+</html>

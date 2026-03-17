@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="신규 S2B 서비스 미리보기 - 인터렉티브 가이드">
+  <title>미리보기 | S2B NGC</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .preview-nav {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .preview-nav-btn {
+      padding: 8px 18px;
+      border: 1.5px solid var(--color-border);
+      border-radius: 20px;
+      font-size: .875rem;
+      font-weight: 600;
+      color: var(--color-text-sub);
+      background: var(--color-surface);
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .preview-nav-btn:hover,
+    .preview-nav-btn.active {
+      border-color: var(--color-primary);
+      background: var(--color-primary);
+      color: #fff;
+    }
+    .preview-target-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 16px;
+      border-bottom: 2px solid var(--color-border);
+    }
+    .preview-target-tab {
+      padding: 8px 20px;
+      font-size: .9rem;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      cursor: pointer;
+      transition: color .15s, border-color .15s;
+    }
+    .preview-target-tab.active {
+      color: var(--color-primary);
+      border-bottom-color: var(--color-primary);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="header-mount"></div>
+
+  <main>
+    <div class="container">
+      <h1 class="page-title">미리보기</h1>
+      <p class="page-desc">
+        신규 S2B의 주요 서비스를 인터렉티브 가이드로 미리 체험해보세요.<br>
+        <strong>PC 화면에 최적화</strong>되어 있습니다.
+      </p>
+
+      <!-- 모바일 안내 -->
+      <div class="pc-only-notice">
+        <div class="pc-only-icon">🖥️</div>
+        <p><strong>미리보기는 PC 화면에서 이용하실 수 있습니다.</strong></p>
+        <p style="margin-top:8px; font-size:.875rem;">공지사항, FAQ, 매뉴얼 등은 다른 메뉴에서 모바일로 확인하실 수 있습니다.</p>
+      </div>
+
+      <!-- PC 전용 콘텐츠 -->
+      <div class="preview-content">
+
+        <!-- 서비스 선택 -->
+        <section>
+          <h2 class="section-title">서비스 선택</h2>
+          <div class="preview-nav" id="service-nav">
+            <button class="preview-nav-btn active" data-service="estimate-info">견적정보</button>
+            <button class="preview-nav-btn" data-service="estimate-req">견적요청</button>
+            <button class="preview-nav-btn" data-service="notice">안내공고</button>
+            <button class="preview-nav-btn" data-service="bid">입찰</button>
+          </div>
+        </section>
+
+        <!-- 대상 탭 -->
+        <div class="preview-target-tabs" id="target-tabs">
+          <button class="preview-target-tab active" data-target="school">수요기관 관점</button>
+          <button class="preview-target-tab" data-target="supplier">공급업체 관점</button>
+        </div>
+
+        <!-- 안내 문구 -->
+        <div class="card" style="margin-bottom:16px; background:var(--color-bg); border-style:dashed;">
+          <p style="font-size:.875rem; color:var(--color-text-sub);">
+            💡 아래 화면은 실제 신규 S2B 화면을 기반으로 제작된 <strong>미리보기 전용 가이드</strong>입니다.
+            실제 데이터 입력·저장은 불가능합니다.
+          </p>
+        </div>
+
+        <!-- iframe 영역 -->
+        <div class="preview-frame-wrap" id="preview-frame-wrap">
+          <!-- 퍼블리싱 파일 준비 전 안내 -->
+          <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:500px; color:var(--color-text-muted); gap:12px;">
+            <div style="font-size:3rem;">📂</div>
+            <p style="font-weight:600;">퍼블리싱 파일 연동 준비 중입니다.</p>
+            <p style="font-size:.875rem;">preview/ 폴더에 퍼블리싱 파일을 추가하고 아래 스크립트의 경로를 업데이트하세요.</p>
+          </div>
+          <!-- 퍼블리싱 파일 연동 시 아래 iframe 주석 해제
+          <iframe id="preview-iframe" src="preview/estimate-info-school.html" title="S2B 서비스 미리보기"></iframe>
+          -->
+        </div>
+
+        <!-- 워크플로우 안내 -->
+        <section style="margin-top:32px;">
+          <h2 class="section-title">업무 흐름도</h2>
+          <div class="card" style="text-align:center; color:var(--color-text-muted); padding:48px;">
+            <p>업무 흐름도 이미지 또는 다이어그램을 여기에 추가하세요.</p>
+            <p style="font-size:.875rem; margin-top:8px;">예) assets/images/workflow-school.png</p>
+          </div>
+        </section>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="footer-mount"></div>
+
+  <script src="js/components.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // 서비스·대상 조합별 퍼블리싱 파일 경로 매핑
+    // 퍼블리싱 파일 준비 후 경로를 채워주세요.
+    const PREVIEW_MAP = {
+      'estimate-info': { school: '', supplier: '' },
+      'estimate-req':  { school: '', supplier: '' },
+      'notice':        { school: '', supplier: '' },
+      'bid':           { school: '', supplier: '' },
+    };
+
+    let currentService = 'estimate-info';
+    let currentTarget  = 'school';
+
+    function updateFrame() {
+      const path = PREVIEW_MAP[currentService]?.[currentTarget];
+      const wrap = document.getElementById('preview-frame-wrap');
+      if (path) {
+        wrap.innerHTML = `<iframe src="${path}" title="S2B 서비스 미리보기" id="preview-iframe"></iframe>`;
+      }
+    }
+
+    document.getElementById('service-nav')?.querySelectorAll('.preview-nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.preview-nav-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentService = btn.dataset.service;
+        updateFrame();
+      });
+    });
+
+    document.getElementById('target-tabs')?.querySelectorAll('.preview-target-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.preview-target-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentTarget = tab.dataset.target;
+        updateFrame();
+      });
+    });
+  </script>
+</body>
+</html>
