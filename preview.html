@@ -3,170 +3,791 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="신규 S2B 서비스 미리보기 - 인터렉티브 가이드">
   <title>미리보기 | S2B 2.0 이용지원센터</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
-    .preview-nav {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
+    /* 1280px 미만 안내 */
+    .narrow-notice { display:none; text-align:center; padding:80px 20px; color:var(--color-text-sub); }
+    .narrow-notice .icon { font-size:3rem; margin-bottom:16px; }
+
+    /* 투어 래퍼 */
+    .tour-wrapper { display:flex; flex-direction:column; }
+    .tour-guide-notice {
+      background:#FFFBEB; border:1px dashed var(--color-warning);
+      border-radius:var(--radius-sm); padding:8px 14px;
+      font-size:.8rem; color:var(--color-text-sub);
+      margin-bottom:16px; text-align:center;
     }
-    .preview-nav-btn {
-      padding: 8px 18px;
-      border: 1.5px solid var(--color-border);
-      border-radius: 20px;
-      font-size: .875rem;
-      font-weight: 600;
-      color: var(--color-text-sub);
-      background: var(--color-surface);
-      cursor: pointer;
-      transition: all .15s;
+
+    /* ── 선택 영역 ── */
+    .selection-bar {
+      display:flex; align-items:flex-start; gap:20px;
+      background:var(--color-surface);
+      border:1px solid var(--color-border);
+      border-radius:var(--radius-md) var(--radius-md) 0 0;
+      padding:16px 20px;
     }
-    .preview-nav-btn:hover,
-    .preview-nav-btn.active {
-      border-color: var(--color-primary);
-      background: var(--color-primary);
-      color: #fff;
+    .selection-left  { flex:1; min-width:0; }
+    .selection-right { flex-shrink:0; width:260px; }
+    .selection-label {
+      font-size:.78rem; font-weight:700; color:var(--color-text-muted);
+      text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px;
     }
-    .preview-target-tabs {
-      display: flex;
-      gap: 4px;
-      margin-bottom: 16px;
-      border-bottom: 2px solid var(--color-border);
+    .service-tabs { display:flex; gap:8px; flex-wrap:wrap; }
+    .service-tab {
+      padding:7px 20px; border-radius:20px; font-size:.875rem; font-weight:600;
+      color:var(--color-text-sub); background:var(--color-bg);
+      border:1.5px solid var(--color-border); cursor:pointer; transition:all .15s;
     }
-    .preview-target-tab {
-      padding: 8px 20px;
-      font-size: .9rem;
-      font-weight: 600;
-      color: var(--color-text-muted);
-      border-bottom: 2px solid transparent;
-      margin-bottom: -2px;
-      cursor: pointer;
-      transition: color .15s, border-color .15s;
+    .service-tab:hover { border-color:var(--color-primary-lt); color:var(--color-primary-lt); }
+    .service-tab.active { background:var(--color-primary); color:#fff; border-color:var(--color-primary); }
+
+    /* ── 시나리오 리스트박스 ── */
+    .scenario-list {
+      height:160px; overflow-y:auto;
+      border:1.5px solid var(--color-border); border-radius:var(--radius-sm);
+      background:#fff;
     }
-    .preview-target-tab.active {
-      color: var(--color-primary);
-      border-bottom-color: var(--color-primary);
+    .scenario-list::-webkit-scrollbar { width:6px; }
+    .scenario-list::-webkit-scrollbar-thumb { background:var(--color-border); border-radius:3px; }
+    .scenario-item {
+      padding:7px 12px; font-size:.82rem; cursor:pointer;
+      border-bottom:1px solid var(--color-border);
+      color:var(--color-text-sub); line-height:1.4;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+      transition:background .1s;
+    }
+    .scenario-item:last-child { border-bottom:none; }
+    .scenario-item:hover { background:var(--color-bg); color:var(--color-text); }
+    .scenario-item.active {
+      background:#EBF4FF; color:var(--color-primary); font-weight:600;
+      border-left:3px solid var(--color-primary);
+    }
+
+
+    /* ── 상단 바 ── */
+    .tour-topbar {
+      display:flex; align-items:center; gap:16px;
+      padding:10px 16px; background:var(--color-surface);
+      border:1px solid var(--color-border); border-bottom:none; border-top:none;
+    }
+    .step-indicator { font-size:.85rem; color:var(--color-text-muted); white-space:nowrap; }
+    .step-indicator strong { color:var(--color-primary); }
+    .current-context {
+      display:flex; align-items:center; gap:6px;
+      font-size:.8rem; color:var(--color-text-sub);
+    }
+    .context-badge {
+      padding:2px 10px; border-radius:10px; font-size:.78rem; font-weight:600;
+    }
+    .context-badge.school   { background:#EBF4FF; color:#1E3A5F; }
+    .context-badge.supplier { background:#F0FDF4; color:#065F46; }
+    .tour-nav-btns { display:flex; gap:8px; margin-left:auto; }
+    .tour-nav-btn {
+      display:flex; align-items:center; gap:4px;
+      padding:7px 16px; border-radius:var(--radius-sm); font-size:.875rem; font-weight:600;
+      border:1.5px solid var(--color-border); color:var(--color-text-sub);
+      background:var(--color-surface); transition:all .15s; cursor:pointer;
+    }
+    .tour-nav-btn:hover:not(:disabled) { border-color:var(--color-primary); color:var(--color-primary); }
+    .tour-nav-btn:disabled { opacity:.4; cursor:not-allowed; }
+    .tour-nav-btn.next { background:var(--color-primary); color:#fff; border-color:var(--color-primary); }
+    .tour-nav-btn.next:hover:not(:disabled) { background:var(--color-primary-lt); }
+
+    /* selection-bar / bezel / bottombar 너비 통일 */
+    .tour-inner { width:100%; }
+
+    /* ── 화면 프레임 래퍼 (베젤) ── */
+    .screen-bezel {
+      background:var(--color-bg);
+      padding:0 0 72px;
+    }
+    /* 상단 바 — 베젤 안에서 */
+    .screen-bezel .tour-topbar {
+      padding:20px 0 16px;
+      border:none; background:transparent;
+    }
+
+    /* ── Windows 11 Chrome 프레임 ── */
+    .screen-frame {
+      width:100%;
+      border-radius:8px 8px 0 0;
+      overflow:hidden;
+      box-shadow:0 8px 32px rgba(0,0,0,.22);
+    }
+    /* ── Chrome (Windows 11, 연회색) ── */
+    .chrome-tabbar {
+      display:flex; align-items:flex-end;
+      background:#DADADA; padding:8px 8px 0; gap:2px;
+    }
+    .chrome-tab {
+      display:flex; align-items:center; gap:7px;
+      padding:8px 14px 9px;
+      background:transparent; border-radius:8px 8px 0 0;
+      font-size:.8rem; color:#555;
+      min-width:140px; max-width:200px;
+      cursor:pointer; transition:background .15s, color .15s;
+      position:relative; z-index:1; user-select:none;
+    }
+    .chrome-tab:hover:not(.active) { background:rgba(0,0,0,.07); color:#333; }
+    .chrome-tab.active { background:#F5F5F5; color:#202124; }
+    .chrome-tab-icon  { font-size:.85rem; flex-shrink:0; }
+    .chrome-tab-title { flex:1; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+    .chrome-tab-close {
+      width:16px; height:16px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:.6rem; color:#888; flex-shrink:0;
+    }
+    .chrome-tab.active .chrome-tab-close { color:#5F6368; }
+    .chrome-tab-close:hover { background:rgba(0,0,0,.1); color:#333; }
+    .chrome-wincontrols {
+      margin-left:auto; display:flex; align-items:center; padding-bottom:5px; gap:0;
+    }
+    .chrome-wbtn {
+      width:46px; height:30px; display:flex; align-items:center; justify-content:center;
+      font-size:.68rem; color:#444; background:none; border:none;
+      cursor:default; transition:background .12s; letter-spacing:-.5px;
+    }
+    .chrome-wbtn:hover       { background:rgba(0,0,0,.1); }
+    .chrome-wbtn.close:hover { background:#C42B1C; color:#fff; }
+
+    /* 주소 바 */
+    .chrome-toolbar {
+      display:flex; align-items:center; gap:2px;
+      background:#F5F5F5; padding:7px 12px 8px;
+      border-bottom:1px solid #E0E0E0;
+    }
+    .chrome-navbtn {
+      width:30px; height:30px; border-radius:50%; display:flex; align-items:center;
+      justify-content:center; font-size:.8rem; color:#5F6368; flex-shrink:0;
+      transition:background .12s;
+    }
+    .chrome-navbtn:hover   { background:rgba(0,0,0,.07); }
+    .chrome-navbtn.disabled { color:#C0C4CB; }
+    .chrome-addressbar {
+      flex:1; height:32px; background:#fff; border-radius:16px;
+      border:1px solid #E0E0E0;
+      display:flex; align-items:center; padding:0 14px; gap:6px;
+      font-size:.78rem; color:#202124; margin:0 8px;
+    }
+    .chrome-lock   { font-size:.72rem; color:#5F6368; }
+    .chrome-url    { flex:1; color:#202124; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+    .chrome-url em { color:#1a73e8; font-style:normal; }
+    .chrome-actions { display:flex; gap:0; margin-left:4px; }
+    .chrome-action  {
+      width:30px; height:30px; border-radius:50%; display:flex; align-items:center;
+      justify-content:center; font-size:.8rem; color:#5F6368;
+    }
+    .chrome-action:hover { background:rgba(0,0,0,.07); }
+
+    /* 단일 콘텐츠 패널 */
+    .screen-content {
+      height:720px; overflow-y:auto;
+      background:#fafbfc; padding:24px;
+    }
+
+    /* ── 하단 바 ── */
+    .tour-bottombar {
+      background:var(--color-surface); border:1px solid var(--color-border);
+      border-radius:0 0 var(--radius-md) var(--radius-md); padding:16px;
+    }
+    .step-bar { display:flex; justify-content:center; margin-bottom:14px; }
+    .step-bar-inner { display:flex; align-items:flex-start; }
+    .step-item { display:flex; flex-direction:column; align-items:center; cursor:pointer; }
+    .step-connector { width:72px; height:2px; margin-top:17px; flex-shrink:0; transition:background .3s; }
+    .step-connector.done    { background:var(--color-success); }
+    .step-connector.pending { background:var(--color-border); }
+    .step-circle {
+      width:36px; height:36px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:.85rem; font-weight:700; transition:all .2s;
+      border:2px solid transparent; margin-bottom:6px; cursor:pointer;
+    }
+    .step-circle.done    { background:var(--color-success); color:#fff; border-color:var(--color-success); }
+    .step-circle.current { background:#fff; color:var(--color-primary); border-color:var(--color-primary); box-shadow:0 0 0 3px rgba(30,58,95,.15); }
+    .step-circle.pending { background:#fff; color:var(--color-text-muted); border-color:var(--color-border); }
+    .step-item:hover .step-circle.pending { border-color:var(--color-primary-lt); color:var(--color-primary-lt); }
+    .step-label { font-size:.75rem; color:var(--color-text-muted); text-align:center; max-width:72px; line-height:1.3; }
+    .step-item.current-step .step-label { color:var(--color-primary); font-weight:600; }
+    .step-desc-box {
+      background:var(--color-bg); border-radius:var(--radius-sm); padding:10px 16px;
+      font-size:.875rem; color:var(--color-text-sub);
+      border-left:3px solid var(--color-primary);
+      display:flex; align-items:center; gap:10px;
+    }
+    .step-desc-name { font-weight:700; color:var(--color-primary); white-space:nowrap; }
+
+    /* 준비중 안내 */
+    .ready-placeholder {
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      height:100%; min-height:400px; gap:12px;
+      color:var(--color-text-muted); text-align:center;
+    }
+    .ready-placeholder .icon { font-size:2.2rem; }
+    .ready-placeholder .msg  { font-size:.9rem; font-weight:600; color:var(--color-text-sub); }
+
+    /* ── 1280px 미만: 투어 숨김, 안내 표시 (모든 스타일 뒤에 위치해야 override됨) ── */
+    @media (max-width:1279px) {
+      .tour-wrapper  { display:none; }
+      .narrow-notice { display:block; }
     }
   </style>
 </head>
 <body>
-
   <div id="header-mount"></div>
-
   <main>
     <div class="container">
       <h1 class="page-title">미리보기</h1>
       <p class="page-desc">
-        신규 S2B의 주요 서비스를 인터렉티브 가이드로 미리 체험해보세요.<br>
-        <strong>PC 화면에 최적화</strong>되어 있습니다.
+        신규 S2B의 주요 업무 흐름을 인터랙티브하게 체험하세요.<br>
+        <strong>PC 화면에 최적화되어 있습니다.</strong>
       </p>
 
-      <!-- 모바일 안내 -->
-      <div class="pc-only-notice">
-        <div class="pc-only-icon">🖥️</div>
+      <div class="narrow-notice">
+        <div class="icon">🖥️</div>
         <p><strong>미리보기는 PC 화면에서 이용하실 수 있습니다.</strong></p>
-        <p style="margin-top:8px; font-size:.875rem;">공지사항, FAQ, 매뉴얼 등은 다른 메뉴에서 모바일로 확인하실 수 있습니다.</p>
+        <p style="margin-top:8px;font-size:.875rem;">공지사항, FAQ, 매뉴얼 등은 다른 메뉴에서 모바일로 확인하실 수 있습니다.</p>
       </div>
 
-      <!-- PC 전용 콘텐츠 -->
-      <div class="preview-content">
-
-        <!-- 서비스 선택 -->
-        <section>
-          <h2 class="section-title">서비스 선택</h2>
-          <div class="preview-nav" id="service-nav">
-            <button class="preview-nav-btn active" data-service="estimate-info">견적정보</button>
-            <button class="preview-nav-btn" data-service="estimate-req">견적요청</button>
-            <button class="preview-nav-btn" data-service="notice">안내공고</button>
-            <button class="preview-nav-btn" data-service="bid">입찰</button>
-          </div>
-        </section>
-
-        <!-- 대상 탭 -->
-        <div class="preview-target-tabs" id="target-tabs">
-          <button class="preview-target-tab active" data-target="school">수요기관 관점</button>
-          <button class="preview-target-tab" data-target="supplier">공급업체 관점</button>
+      <div class="tour-wrapper">
+        <div class="tour-guide-notice">
+          💡 아래 화면은 실제 신규 S2B를 기반으로 제작된 <strong>미리보기 전용 가이드</strong>입니다. 실제 데이터 입력·저장은 불가능합니다.
         </div>
 
-        <!-- 안내 문구 -->
-        <div class="card" style="margin-bottom:16px; background:var(--color-bg); border-style:dashed;">
-          <p style="font-size:.875rem; color:var(--color-text-sub);">
-            💡 아래 화면은 실제 신규 S2B 화면을 기반으로 제작된 <strong>미리보기 전용 가이드</strong>입니다.
-            실제 데이터 입력·저장은 불가능합니다.
-          </p>
+        <div class="tour-inner">
+        <!-- 선택 영역 -->
+        <div class="selection-bar">
+          <div class="selection-left">
+            <div class="selection-label">서비스 선택</div>
+            <div class="service-tabs" id="service-tabs">
+              <button class="service-tab active" data-service="estimate-info">견적정보</button>
+              <button class="service-tab" data-service="estimate-req">견적요청</button>
+              <button class="service-tab" data-service="notice">안내공고</button>
+              <button class="service-tab" data-service="bid">입찰</button>
+            </div>
+          </div>
+          <div class="selection-right">
+            <div class="selection-label">시나리오 선택</div>
+            <div class="scenario-list" id="scenario-list"></div>
+          </div>
         </div>
 
-        <!-- iframe 영역 -->
-        <div class="preview-frame-wrap" id="preview-frame-wrap">
-          <!-- 퍼블리싱 파일 준비 전 안내 -->
-          <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:500px; color:var(--color-text-muted); gap:12px;">
-            <div style="font-size:3rem;">📂</div>
-            <p style="font-weight:600;">퍼블리싱 파일 연동 준비 중입니다.</p>
-            <p style="font-size:.875rem;">preview/ 폴더에 퍼블리싱 파일을 추가하고 아래 스크립트의 경로를 업데이트하세요.</p>
+        <!-- 화면 프레임 (Windows 11 Chrome) -->
+        <div class="screen-bezel">
+
+          <!-- 상단 바 -->
+          <div class="tour-topbar">
+            <div class="current-context">
+              <span id="ctx-service-name" class="context-badge" style="background:#F1F5F9;color:var(--color-text-sub)">견적정보</span>
+              <span style="color:var(--color-border)">›</span>
+              <span id="ctx-target-badge" class="context-badge school">수요기관</span>
+            </div>
+            <div class="step-indicator">
+              <strong id="top-step-num">1</strong> / <span id="top-total-num">5</span> 단계
+              &nbsp;·&nbsp;
+              <span id="top-step-name"></span>
+            </div>
+            <div class="tour-nav-btns">
+              <button class="tour-nav-btn" id="btn-prev">◀ 이전</button>
+              <button class="tour-nav-btn next" id="btn-next">다음 ▶</button>
+            </div>
           </div>
-          <!-- 퍼블리싱 파일 연동 시 아래 iframe 주석 해제
-          <iframe id="preview-iframe" src="preview/estimate-info-school.html" title="S2B 서비스 미리보기"></iframe>
-          -->
+
+          <div class="screen-frame">
+            <!-- 탭 바 -->
+            <div class="chrome-tabbar">
+              <div class="chrome-tab active" data-tab-target="school" id="chrome-tab-school">
+                <span class="chrome-tab-icon">🏫</span>
+                <span class="chrome-tab-title">수요기관</span>
+                <span class="chrome-tab-close">✕</span>
+              </div>
+              <div class="chrome-tab" data-tab-target="supplier" id="chrome-tab-supplier">
+                <span class="chrome-tab-icon">🏢</span>
+                <span class="chrome-tab-title">공급업체</span>
+                <span class="chrome-tab-close">✕</span>
+              </div>
+              <div class="chrome-wincontrols">
+                <button class="chrome-wbtn">─</button>
+                <button class="chrome-wbtn">□</button>
+                <button class="chrome-wbtn close">✕</button>
+              </div>
+            </div>
+            <!-- 주소 바 -->
+            <div class="chrome-toolbar">
+              <div class="chrome-navbtn disabled">◀</div>
+              <div class="chrome-navbtn disabled">▶</div>
+              <div class="chrome-navbtn">↻</div>
+              <div class="chrome-addressbar">
+                <span class="chrome-lock">🔒</span>
+                <span class="chrome-url"><em>s2b.go.kr</em>/preview</span>
+              </div>
+              <div class="chrome-actions">
+                <div class="chrome-action">☆</div>
+                <div class="chrome-action">⋮</div>
+              </div>
+            </div>
+            <!-- 콘텐츠 -->
+            <div class="screen-content" id="screen-content"></div>
+          </div>
         </div>
 
-        <!-- 워크플로우 안내 -->
-        <section style="margin-top:32px;">
-          <h2 class="section-title">업무 흐름도</h2>
-          <div class="card" style="text-align:center; color:var(--color-text-muted); padding:48px;">
-            <p>업무 흐름도 이미지 또는 다이어그램을 여기에 추가하세요.</p>
-            <p style="font-size:.875rem; margin-top:8px;">예) assets/images/workflow-school.png</p>
+        <!-- 하단 바 -->
+        <div class="tour-bottombar">
+          <div class="step-bar"><div class="step-bar-inner" id="step-bar-inner"></div></div>
+          <div class="step-desc-box">
+            <span class="step-desc-name" id="desc-name"></span>
+            <span id="desc-text"></span>
           </div>
-        </section>
+        </div>
+        </div><!-- /tour-inner -->
       </div>
-
     </div>
   </main>
-
   <div id="footer-mount"></div>
 
   <script src="js/components.js"></script>
   <script src="js/app.js"></script>
   <script>
-    // 서비스·대상 조합별 퍼블리싱 파일 경로 매핑
-    // 퍼블리싱 파일 준비 후 경로를 채워주세요.
-    const PREVIEW_MAP = {
-      'estimate-info': { school: '', supplier: '' },
-      'estimate-req':  { school: '', supplier: '' },
-      'notice':        { school: '', supplier: '' },
-      'bid':           { school: '', supplier: '' },
-    };
+  // ── 플레이스홀더 ──────────────────────────────────────────────
+  const PLACEHOLDER = `
+    <div class="ready-placeholder">
+      <div class="icon">📂</div>
+      <div class="msg">퍼블리싱 파일 연동 준비 중입니다.</div>
+    </div>`;
 
-    let currentService = 'estimate-info';
-    let currentTarget  = 'school';
+  // ── 콘텐츠 데이터 ─────────────────────────────────────────────
+  // 구조: CONTENT[service].scenarios[scenarioIndex][target] = 단계 배열
+  // html 필드에 퍼블리싱 파일 연동 시 실제 콘텐츠를 입력하세요.
+  const CONTENT = {
+    'estimate-info': {
+      name: '견적정보',
+      scenarios: [
+        {
+          name: '일반 물품 견적 조회',
+          school:   [ {name:'로그인·대시보드', desc:'S2B에 로그인하여 견적정보 대시보드를 확인합니다.', html:PLACEHOLDER},
+                      {name:'물품 목록 조회',   desc:'카테고리별 물품 목록을 조회합니다.',              html:PLACEHOLDER},
+                      {name:'물품 상세 확인',   desc:'물품의 상세 규격과 납품 조건을 확인합니다.',      html:PLACEHOLDER},
+                      {name:'규격서 검토',      desc:'물품 규격서 및 첨부 자료를 검토합니다.',          html:PLACEHOLDER},
+                      {name:'견적 의뢰',        desc:'검토한 물품에 대해 견적을 의뢰합니다.',           html:PLACEHOLDER} ],
+          supplier: [ {name:'로그인·대시보드', desc:'S2B에 로그인하여 판매 현황 대시보드를 확인합니다.',html:PLACEHOLDER},
+                      {name:'물품 등록 현황',   desc:'등록된 물품 목록과 상태를 확인합니다.',           html:PLACEHOLDER},
+                      {name:'가격 정보 관리',   desc:'물품별 단가 및 납품 조건을 관리합니다.',          html:PLACEHOLDER},
+                      {name:'견적 요청 확인',   desc:'수요기관으로부터 수신된 견적 요청을 확인합니다.', html:PLACEHOLDER},
+                      {name:'견적 제출',        desc:'견적서를 작성하여 수요기관에 제출합니다.',        html:PLACEHOLDER} ],
+        },
+        {
+          name: '카탈로그 물품 즉시 구매',
+          school:   [ {name:'카탈로그 검색',   desc:'카탈로그에 등록된 물품을 검색합니다.',            html:PLACEHOLDER},
+                      {name:'단가계약 확인',   desc:'단가계약 조건과 납품 이력을 확인합니다.',          html:PLACEHOLDER},
+                      {name:'구매 요청',       desc:'카탈로그 물품 구매 요청을 작성합니다.',            html:PLACEHOLDER},
+                      {name:'결재·발주',       desc:'구매 요청을 결재하고 발주합니다.',                html:PLACEHOLDER} ],
+          supplier: [ {name:'카탈로그 등록',   desc:'판매 물품을 카탈로그에 등록합니다.',              html:PLACEHOLDER},
+                      {name:'단가 정보 관리',  desc:'카탈로그 물품의 단가를 최신 상태로 유지합니다.',  html:PLACEHOLDER},
+                      {name:'주문 접수 확인',  desc:'신규 주문 접수를 확인합니다.',                    html:PLACEHOLDER},
+                      {name:'납품 처리',       desc:'납품 확인서를 등록하고 완료 처리합니다.',         html:PLACEHOLDER} ],
+        },
+        {
+          name: '소액 수의계약 물품 조회',
+          school:   [ {name:'수의계약 검색',   desc:'소액 수의계약 가능 물품을 검색합니다.',           html:PLACEHOLDER},
+                      {name:'업체 선정',       desc:'견적 제출 업체 중 계약업체를 선정합니다.',        html:PLACEHOLDER},
+                      {name:'계약 체결',       desc:'선정된 업체와 전자계약을 체결합니다.',            html:PLACEHOLDER},
+                      {name:'납품 확인',       desc:'납품 완료 후 검수 처리합니다.',                   html:PLACEHOLDER} ],
+          supplier: [ {name:'수의계약 공고 확인', desc:'소액 수의계약 견적 요청을 확인합니다.',        html:PLACEHOLDER},
+                      {name:'견적서 제출',     desc:'수의계약 견적서를 작성·제출합니다.',              html:PLACEHOLDER},
+                      {name:'계약 체결',       desc:'낙찰 후 전자계약을 체결합니다.',                  html:PLACEHOLDER},
+                      {name:'납품·정산',       desc:'납품 완료 후 대금 청구 처리합니다.',              html:PLACEHOLDER} ],
+        },
+        {
+          name: '물품 비교 견적 요청',
+          school:   [ {name:'비교대상 선택',   desc:'비교 견적을 받을 물품을 복수 선택합니다.',        html:PLACEHOLDER},
+                      {name:'업체 선정',       desc:'견적 요청 대상 업체를 선정합니다.',               html:PLACEHOLDER},
+                      {name:'견적 수신·비교', desc:'수신된 견적을 비교 분석합니다.',                   html:PLACEHOLDER},
+                      {name:'최종 선정',       desc:'최저가 또는 적격 업체를 최종 선정합니다.',        html:PLACEHOLDER},
+                      {name:'계약 완료',       desc:'선정 업체와 전자계약을 체결합니다.',              html:PLACEHOLDER} ],
+          supplier: [ {name:'견적 요청 수신',  desc:'비교 견적 요청 알림을 수신합니다.',               html:PLACEHOLDER},
+                      {name:'견적서 작성',     desc:'경쟁 견적서를 작성합니다.',                       html:PLACEHOLDER},
+                      {name:'견적 제출',       desc:'마감 기한 내 견적서를 제출합니다.',               html:PLACEHOLDER},
+                      {name:'결과 확인',       desc:'선정 여부와 결과를 확인합니다.',                  html:PLACEHOLDER},
+                      {name:'납품 처리',       desc:'낙찰 시 납품 일정을 등록합니다.',                 html:PLACEHOLDER} ],
+        },
+        {
+          name: '신규 등록 물품 검토',
+          school:   [ {name:'신규물품 목록',   desc:'최근 등록된 신규 물품 목록을 조회합니다.',        html:PLACEHOLDER},
+                      {name:'규격 검토',       desc:'신규 물품의 규격 및 인증 서류를 검토합니다.',     html:PLACEHOLDER},
+                      {name:'시범 주문',       desc:'소량 시범 주문으로 품질을 확인합니다.',           html:PLACEHOLDER},
+                      {name:'검수 처리',       desc:'납품 물품의 품질을 검수합니다.',                  html:PLACEHOLDER} ],
+          supplier: [ {name:'물품 신규 등록',  desc:'신규 물품 정보와 규격서를 등록합니다.',           html:PLACEHOLDER},
+                      {name:'심사 진행',       desc:'등록 물품의 심사 진행 현황을 확인합니다.',        html:PLACEHOLDER},
+                      {name:'심사 승인',       desc:'심사 완료 후 판매 가능 상태로 전환됩니다.',       html:PLACEHOLDER},
+                      {name:'첫 주문 처리',    desc:'첫 주문 접수 및 납품을 처리합니다.',              html:PLACEHOLDER} ],
+        },
+        {
+          name: '납품 이력 조회 및 정산',
+          school:   [ {name:'납품 이력 조회',  desc:'기간별 납품 이력을 조회합니다.',                  html:PLACEHOLDER},
+                      {name:'검수 내역 확인',  desc:'검수 완료된 물품 내역을 확인합니다.',             html:PLACEHOLDER},
+                      {name:'정산 처리',       desc:'납품 대금 정산을 처리합니다.',                    html:PLACEHOLDER} ],
+          supplier: [ {name:'납품 현황 조회',  desc:'납품 완료 및 대기 현황을 조회합니다.',            html:PLACEHOLDER},
+                      {name:'세금계산서 발행', desc:'납품 완료 건에 대해 세금계산서를 발행합니다.',    html:PLACEHOLDER},
+                      {name:'대금 수령 확인',  desc:'대금 입금 내역을 확인합니다.',                    html:PLACEHOLDER} ],
+        },
+      ],
+    },
+    'estimate-req': {
+      name: '견적요청',
+      scenarios: [
+        {
+          name: '일반 견적요청 진행',
+          school:   [ {name:'로그인·대시보드', desc:'S2B에 로그인하여 메인 대시보드를 확인합니다.',    html:PLACEHOLDER},
+                      {name:'물품 검색',       desc:'필요한 물품을 키워드 또는 카테고리로 검색합니다.',html:PLACEHOLDER},
+                      {name:'견적 요청서 작성',desc:'견적 요청서를 작성하여 공급업체에 발송합니다.',   html:PLACEHOLDER},
+                      {name:'견적 비교',       desc:'복수 업체의 견적을 비교합니다.',                  html:PLACEHOLDER},
+                      {name:'계약 완료',       desc:'전자계약을 체결하고 납품을 확인합니다.',          html:PLACEHOLDER} ],
+          supplier: [ {name:'로그인·대시보드', desc:'판매 현황과 신규 요청을 대시보드에서 확인합니다.',html:PLACEHOLDER},
+                      {name:'등록 물품 관리',  desc:'판매 물품 목록과 재고 현황을 관리합니다.',        html:PLACEHOLDER},
+                      {name:'견적 요청 수신',  desc:'신규 견적 요청 알림을 수신합니다.',               html:PLACEHOLDER},
+                      {name:'견적서 작성·제출',desc:'견적 조건을 입력하고 견적서를 제출합니다.',       html:PLACEHOLDER},
+                      {name:'낙찰·납품 처리', desc:'낙찰 확정 후 납품 확인서를 등록합니다.',           html:PLACEHOLDER} ],
+        },
+        {
+          name: '긴급 소모품 견적요청',
+          school:   [ {name:'긴급요청 작성',   desc:'긴급 소모품 견적 요청서를 작성합니다.',           html:PLACEHOLDER},
+                      {name:'빠른 업체 선정',  desc:'기존 거래 업체 중 긴급 대응 가능 업체를 선정합니다.', html:PLACEHOLDER},
+                      {name:'견적 수신',       desc:'빠른 시간 내 견적을 수신합니다.',                 html:PLACEHOLDER},
+                      {name:'즉시 계약',       desc:'긴급 수의계약으로 즉시 체결합니다.',              html:PLACEHOLDER} ],
+          supplier: [ {name:'긴급요청 수신',   desc:'긴급 견적 요청 알림을 수신합니다.',               html:PLACEHOLDER},
+                      {name:'즉시 견적 제출',  desc:'재고 현황을 확인하고 즉시 견적서를 제출합니다.',  html:PLACEHOLDER},
+                      {name:'계약·납품',       desc:'계약 체결 즉시 납품 처리합니다.',                 html:PLACEHOLDER} ],
+        },
+        {
+          name: '복수 업체 비교 견적',
+          school:   [ {name:'물품 선정',       desc:'비교 견적 대상 물품을 선정합니다.',               html:PLACEHOLDER},
+                      {name:'다수 업체 발송',  desc:'복수 업체에 동시에 견적 요청을 발송합니다.',      html:PLACEHOLDER},
+                      {name:'견적 수신·비교', desc:'접수된 견적을 항목별로 비교합니다.',               html:PLACEHOLDER},
+                      {name:'업체 선정',       desc:'최적 업체를 선정하고 결재를 진행합니다.',         html:PLACEHOLDER},
+                      {name:'계약 완료',       desc:'선정된 업체와 계약을 완료합니다.',                html:PLACEHOLDER} ],
+          supplier: [ {name:'견적 요청 수신',  desc:'견적 요청 알림을 수신합니다.',                    html:PLACEHOLDER},
+                      {name:'경쟁 견적 작성',  desc:'경쟁력 있는 견적서를 작성합니다.',                html:PLACEHOLDER},
+                      {name:'견적 제출',       desc:'마감 기한 내에 견적서를 제출합니다.',             html:PLACEHOLDER},
+                      {name:'결과 통보 확인',  desc:'선정 여부 결과를 확인합니다.',                    html:PLACEHOLDER},
+                      {name:'납품 처리',       desc:'납품 완료 후 대금 청구를 처리합니다.',            html:PLACEHOLDER} ],
+        },
+        {
+          name: '임대 물품 견적요청',
+          school:   [ {name:'임대 물품 검색',  desc:'임대 가능한 물품 목록을 검색합니다.',             html:PLACEHOLDER},
+                      {name:'임대 조건 확인',  desc:'임대 기간 및 단가 조건을 확인합니다.',            html:PLACEHOLDER},
+                      {name:'견적 요청',       desc:'임대 견적 요청서를 작성·발송합니다.',             html:PLACEHOLDER},
+                      {name:'계약 체결',       desc:'임대 계약서를 전자서명으로 체결합니다.',          html:PLACEHOLDER},
+                      {name:'반납 처리',       desc:'임대 기간 만료 후 반납을 처리합니다.',            html:PLACEHOLDER} ],
+          supplier: [ {name:'임대 물품 등록',  desc:'임대 가능 물품과 조건을 등록합니다.',             html:PLACEHOLDER},
+                      {name:'견적 수신',       desc:'임대 견적 요청을 수신합니다.',                    html:PLACEHOLDER},
+                      {name:'견적서 제출',     desc:'임대 조건이 포함된 견적서를 제출합니다.',         html:PLACEHOLDER},
+                      {name:'임대 계약',       desc:'임대 계약을 체결합니다.',                         html:PLACEHOLDER},
+                      {name:'반납 확인',       desc:'임대 물품 반납을 확인하고 정산합니다.',           html:PLACEHOLDER} ],
+        },
+        {
+          name: '수리·유지보수 견적요청',
+          school:   [ {name:'유지보수 요청',   desc:'유지보수가 필요한 물품 정보를 입력합니다.',       html:PLACEHOLDER},
+                      {name:'업체 요청',       desc:'유지보수 전문 업체에 견적을 요청합니다.',         html:PLACEHOLDER},
+                      {name:'현장 점검',       desc:'업체의 현장 점검 일정을 조율합니다.',             html:PLACEHOLDER},
+                      {name:'견적 검토',       desc:'수리 견적서를 검토하고 승인합니다.',              html:PLACEHOLDER},
+                      {name:'완료 처리',       desc:'수리 완료 확인 및 대금을 지급합니다.',            html:PLACEHOLDER} ],
+          supplier: [ {name:'유지보수 요청 수신', desc:'유지보수 견적 요청을 수신합니다.',             html:PLACEHOLDER},
+                      {name:'현장 점검',       desc:'현장을 방문하여 수리 범위를 파악합니다.',         html:PLACEHOLDER},
+                      {name:'견적서 제출',     desc:'수리 비용 견적서를 작성·제출합니다.',             html:PLACEHOLDER},
+                      {name:'수리 진행',       desc:'승인 후 수리 작업을 진행합니다.',                 html:PLACEHOLDER},
+                      {name:'완료 보고',       desc:'수리 완료 보고서를 등록합니다.',                  html:PLACEHOLDER} ],
+        },
+        {
+          name: '재요청(재공고) 처리',
+          school:   [ {name:'유찰 확인',       desc:'견적 요청 유찰 사유를 확인합니다.',               html:PLACEHOLDER},
+                      {name:'조건 수정',       desc:'요청 조건을 수정하여 재공고를 준비합니다.',       html:PLACEHOLDER},
+                      {name:'재요청 발송',     desc:'수정된 조건으로 재견적 요청을 발송합니다.',       html:PLACEHOLDER},
+                      {name:'견적 재수신',     desc:'재요청에 대한 견적을 수신합니다.',                html:PLACEHOLDER},
+                      {name:'계약 완료',       desc:'최종 선정 업체와 계약을 완료합니다.',             html:PLACEHOLDER} ],
+          supplier: [ {name:'재요청 알림 수신',desc:'재공고 알림을 수신합니다.',                       html:PLACEHOLDER},
+                      {name:'조건 재확인',     desc:'변경된 요청 조건을 확인합니다.',                  html:PLACEHOLDER},
+                      {name:'견적 재제출',     desc:'수정된 견적서를 제출합니다.',                     html:PLACEHOLDER},
+                      {name:'결과 확인',       desc:'선정 결과를 확인합니다.',                         html:PLACEHOLDER},
+                      {name:'납품 처리',       desc:'낙찰 시 납품 처리를 진행합니다.',                 html:PLACEHOLDER} ],
+        },
+      ],
+    },
+    'notice': {
+      name: '안내공고',
+      scenarios: [
+        {
+          name: '일반 안내공고 작성·게시',
+          school:   [ {name:'공고 목록 조회',  desc:'등록된 안내공고 목록을 조회합니다.',               html:PLACEHOLDER},
+                      {name:'공고 작성',       desc:'입찰 조건과 규격을 입력하여 공고를 작성합니다.',   html:PLACEHOLDER},
+                      {name:'공고 게시',       desc:'작성한 공고를 검토 후 게시합니다.',                html:PLACEHOLDER},
+                      {name:'입찰 접수 현황',  desc:'공고에 접수된 업체 현황을 모니터링합니다.',        html:PLACEHOLDER},
+                      {name:'개찰·계약',       desc:'입찰 결과를 확인하고 전자계약을 진행합니다.',      html:PLACEHOLDER} ],
+          supplier: [ {name:'공고 목록 탐색',  desc:'참여 가능한 안내공고를 탐색합니다.',               html:PLACEHOLDER},
+                      {name:'공고 상세 확인',  desc:'공고 상세 조건과 납품 규격을 확인합니다.',          html:PLACEHOLDER},
+                      {name:'자격요건 검증',   desc:'입찰 참여 자격이 자동으로 검증됩니다.',            html:PLACEHOLDER},
+                      {name:'입찰 참여',       desc:'투찰 금액을 입력하고 입찰서를 제출합니다.',        html:PLACEHOLDER},
+                      {name:'결과 확인',       desc:'개찰 결과와 낙찰 여부를 확인합니다.',              html:PLACEHOLDER} ],
+        },
+        {
+          name: '제한경쟁 입찰 공고',
+          school:   [ {name:'제한 조건 설정',  desc:'지역·실적·규모 제한 조건을 설정합니다.',          html:PLACEHOLDER},
+                      {name:'공고 작성',       desc:'제한경쟁 조건이 포함된 공고를 작성합니다.',        html:PLACEHOLDER},
+                      {name:'공고 게시',       desc:'제한경쟁 공고를 게시합니다.',                      html:PLACEHOLDER},
+                      {name:'자격 심사',       desc:'참여 업체의 제한 조건 충족 여부를 심사합니다.',    html:PLACEHOLDER},
+                      {name:'개찰·계약',       desc:'자격 충족 업체 중 낙찰 업체를 선정합니다.',       html:PLACEHOLDER} ],
+          supplier: [ {name:'제한 공고 탐색',  desc:'자격 조건에 맞는 제한경쟁 공고를 탐색합니다.',    html:PLACEHOLDER},
+                      {name:'자격서류 준비',   desc:'제한 조건 충족 증빙서류를 준비합니다.',            html:PLACEHOLDER},
+                      {name:'입찰 참여',       desc:'자격 서류를 첨부하여 입찰에 참여합니다.',          html:PLACEHOLDER},
+                      {name:'심사 결과 확인',  desc:'자격 심사 결과와 낙찰 여부를 확인합니다.',         html:PLACEHOLDER} ],
+        },
+        {
+          name: '규격심의 후 공고',
+          school:   [ {name:'규격서 작성',     desc:'물품 규격서를 작성하여 심의를 요청합니다.',        html:PLACEHOLDER},
+                      {name:'규격 심의',       desc:'규격심의위원회 심의를 진행합니다.',                html:PLACEHOLDER},
+                      {name:'공고 작성',       desc:'심의 완료된 규격을 바탕으로 공고를 작성합니다.',   html:PLACEHOLDER},
+                      {name:'공고 게시·운영', desc:'공고를 게시하고 입찰을 운영합니다.',               html:PLACEHOLDER},
+                      {name:'개찰·계약',       desc:'입찰 결과를 확인하고 계약합니다.',                html:PLACEHOLDER} ],
+          supplier: [ {name:'공고 탐색',       desc:'규격심의 완료된 공고를 탐색합니다.',               html:PLACEHOLDER},
+                      {name:'규격 검토',       desc:'심의된 규격 내용을 상세히 검토합니다.',            html:PLACEHOLDER},
+                      {name:'입찰 참여',       desc:'규격에 맞는 투찰서를 제출합니다.',                 html:PLACEHOLDER},
+                      {name:'결과 확인',       desc:'낙찰 결과를 확인합니다.',                          html:PLACEHOLDER} ],
+        },
+        {
+          name: '공고 수정·취소 처리',
+          school:   [ {name:'공고 조회',       desc:'수정 또는 취소할 공고를 조회합니다.',              html:PLACEHOLDER},
+                      {name:'수정 사유 입력',  desc:'공고 수정 사유를 입력합니다.',                     html:PLACEHOLDER},
+                      {name:'수정 공고 게시',  desc:'수정된 내용으로 재공고를 게시합니다.',             html:PLACEHOLDER},
+                      {name:'참여 업체 안내',  desc:'기존 참여 업체에 변경 내용을 통보합니다.',         html:PLACEHOLDER} ],
+          supplier: [ {name:'변경 알림 수신',  desc:'참여 중인 공고의 변경 알림을 수신합니다.',         html:PLACEHOLDER},
+                      {name:'변경 내용 확인',  desc:'수정된 공고 내용을 확인합니다.',                   html:PLACEHOLDER},
+                      {name:'입찰서 수정',     desc:'변경 조건에 맞게 입찰서를 수정합니다.',            html:PLACEHOLDER},
+                      {name:'수정 제출',       desc:'수정된 입찰서를 최종 제출합니다.',                 html:PLACEHOLDER} ],
+        },
+        {
+          name: '다수공급자계약 공고',
+          school:   [ {name:'다수공급자 검색', desc:'다수공급자계약 등록 물품을 검색합니다.',           html:PLACEHOLDER},
+                      {name:'공고 작성',       desc:'다수공급자 조건으로 공고를 작성합니다.',           html:PLACEHOLDER},
+                      {name:'납품요청서 발행', desc:'납품요청서를 발행하여 업체에 통보합니다.',         html:PLACEHOLDER},
+                      {name:'납품 확인',       desc:'납품 완료 후 검수합니다.',                         html:PLACEHOLDER} ],
+          supplier: [ {name:'다수공급자 등록', desc:'다수공급자계약 물품으로 등록합니다.',              html:PLACEHOLDER},
+                      {name:'납품요청 수신',   desc:'납품요청서를 수신합니다.',                         html:PLACEHOLDER},
+                      {name:'납품 처리',       desc:'요청된 물품을 납품합니다.',                        html:PLACEHOLDER},
+                      {name:'정산 처리',       desc:'납품 대금 정산을 처리합니다.',                     html:PLACEHOLDER} ],
+        },
+        {
+          name: '긴급공고 처리',
+          school:   [ {name:'긴급공고 작성',   desc:'긴급 사유를 기입하여 공고를 작성합니다.',          html:PLACEHOLDER},
+                      {name:'즉시 게시',       desc:'검토 후 즉시 공고를 게시합니다.',                  html:PLACEHOLDER},
+                      {name:'접수 현황 확인',  desc:'실시간 접수 현황을 모니터링합니다.',               html:PLACEHOLDER},
+                      {name:'긴급 개찰',       desc:'단축된 기간으로 개찰을 진행합니다.',               html:PLACEHOLDER},
+                      {name:'긴급 계약',       desc:'낙찰 업체와 신속하게 계약을 체결합니다.',          html:PLACEHOLDER} ],
+          supplier: [ {name:'긴급공고 탐색',   desc:'긴급 공고 알림을 수신합니다.',                     html:PLACEHOLDER},
+                      {name:'즉시 참여',       desc:'즉시 입찰서를 작성·제출합니다.',                   html:PLACEHOLDER},
+                      {name:'결과 확인',       desc:'긴급 개찰 결과를 확인합니다.',                     html:PLACEHOLDER},
+                      {name:'납품 처리',       desc:'낙찰 시 신속한 납품 처리를 진행합니다.',           html:PLACEHOLDER} ],
+        },
+      ],
+    },
+    'bid': {
+      name: '입찰',
+      scenarios: [
+        {
+          name: '일반 경쟁 입찰 참여',
+          school:   [ {name:'공고 목록 조회',  desc:'진행 중인 입찰 공고 목록을 조회합니다.',           html:PLACEHOLDER},
+                      {name:'공고 상세',       desc:'공고 상세 내용과 입찰 조건을 확인합니다.',         html:PLACEHOLDER},
+                      {name:'입찰 접수 현황',  desc:'업체별 입찰 접수 현황을 모니터링합니다.',          html:PLACEHOLDER},
+                      {name:'개찰 결과',       desc:'업체별 투찰 결과와 낙찰 업체를 확인합니다.',       html:PLACEHOLDER},
+                      {name:'계약 완료',       desc:'낙찰 업체와 전자계약을 체결합니다.',               html:PLACEHOLDER} ],
+          supplier: [ {name:'공고 탐색',       desc:'참여 가능한 입찰 공고를 검색합니다.',              html:PLACEHOLDER},
+                      {name:'자격요건 검증',   desc:'입찰 참여 자격이 자동으로 검증됩니다.',            html:PLACEHOLDER},
+                      {name:'투찰서 작성',     desc:'투찰 금액을 입력하고 입찰서를 제출합니다.',        html:PLACEHOLDER},
+                      {name:'낙찰 결과',       desc:'개찰 결과와 낙찰 여부를 통보받습니다.',            html:PLACEHOLDER},
+                      {name:'납품 일정 등록',  desc:'낙찰 확정 후 납품 일정을 등록합니다.',             html:PLACEHOLDER} ],
+        },
+        {
+          name: '제한경쟁 입찰 참여',
+          school:   [ {name:'제한 공고 검색',  desc:'제한경쟁 조건이 포함된 공고를 검색합니다.',        html:PLACEHOLDER},
+                      {name:'자격 심사',       desc:'참여 업체의 자격 조건을 심사합니다.',              html:PLACEHOLDER},
+                      {name:'개찰',            desc:'자격 충족 업체의 투찰 결과를 개찰합니다.',         html:PLACEHOLDER},
+                      {name:'낙찰자 선정',     desc:'낙찰자를 선정하고 통보합니다.',                    html:PLACEHOLDER},
+                      {name:'계약 체결',       desc:'낙찰업체와 전자계약을 체결합니다.',                html:PLACEHOLDER} ],
+          supplier: [ {name:'제한 조건 확인',  desc:'제한경쟁 자격 조건을 확인합니다.',                 html:PLACEHOLDER},
+                      {name:'자격 서류 제출',  desc:'자격 증빙 서류를 첨부하여 참여합니다.',            html:PLACEHOLDER},
+                      {name:'투찰',            desc:'적정 금액으로 투찰서를 제출합니다.',               html:PLACEHOLDER},
+                      {name:'결과 확인',       desc:'낙찰 결과를 확인합니다.',                          html:PLACEHOLDER},
+                      {name:'계약·납품',       desc:'계약 체결 후 납품을 진행합니다.',                  html:PLACEHOLDER} ],
+        },
+        {
+          name: '협상에 의한 계약 입찰',
+          school:   [ {name:'협상공고 작성',   desc:'협상 기준과 평가 기준을 설정합니다.',              html:PLACEHOLDER},
+                      {name:'제안서 접수',     desc:'업체의 기술 제안서를 접수합니다.',                 html:PLACEHOLDER},
+                      {name:'평가·협상',       desc:'제안서를 평가하고 협상을 진행합니다.',             html:PLACEHOLDER},
+                      {name:'우선협상 대상자 선정', desc:'우선협상 대상자를 선정합니다.',               html:PLACEHOLDER},
+                      {name:'계약 체결',       desc:'협상 완료 후 계약을 체결합니다.',                  html:PLACEHOLDER} ],
+          supplier: [ {name:'협상공고 탐색',   desc:'협상에 의한 계약 공고를 탐색합니다.',              html:PLACEHOLDER},
+                      {name:'제안서 작성',     desc:'기술·가격 제안서를 작성합니다.',                   html:PLACEHOLDER},
+                      {name:'제안서 제출',     desc:'제안서를 마감 기한 내 제출합니다.',                html:PLACEHOLDER},
+                      {name:'협상 진행',       desc:'담당자와 협상을 진행합니다.',                      html:PLACEHOLDER},
+                      {name:'계약 체결',       desc:'협상 완료 후 계약을 체결합니다.',                  html:PLACEHOLDER} ],
+        },
+        {
+          name: '최저가 낙찰 처리',
+          school:   [ {name:'공고 게시',       desc:'최저가 낙찰 조건으로 공고를 게시합니다.',          html:PLACEHOLDER},
+                      {name:'입찰서 접수',     desc:'업체별 투찰 금액을 확인합니다.',                   html:PLACEHOLDER},
+                      {name:'개찰',            desc:'최저가 투찰 업체를 자동 산출합니다.',              html:PLACEHOLDER},
+                      {name:'낙찰자 통보',     desc:'낙찰자에게 결과를 통보합니다.',                    html:PLACEHOLDER},
+                      {name:'계약 체결',       desc:'낙찰업체와 계약을 체결합니다.',                    html:PLACEHOLDER} ],
+          supplier: [ {name:'공고 확인',       desc:'최저가 낙찰 공고 조건을 확인합니다.',              html:PLACEHOLDER},
+                      {name:'투찰 전략 수립',  desc:'경쟁력 있는 투찰 금액을 산출합니다.',              html:PLACEHOLDER},
+                      {name:'투찰',            desc:'입찰서를 제출합니다.',                             html:PLACEHOLDER},
+                      {name:'낙찰 결과',       desc:'개찰 결과와 낙찰 여부를 확인합니다.',              html:PLACEHOLDER},
+                      {name:'계약·납품',       desc:'계약 후 납품 일정을 등록합니다.',                  html:PLACEHOLDER} ],
+        },
+        {
+          name: '적격심사 입찰 처리',
+          school:   [ {name:'공고 게시',       desc:'적격심사 기준이 포함된 공고를 게시합니다.',        html:PLACEHOLDER},
+                      {name:'입찰서 접수',     desc:'업체별 입찰서와 심사 서류를 접수합니다.',          html:PLACEHOLDER},
+                      {name:'적격 심사',       desc:'최저가 업체부터 적격 여부를 심사합니다.',          html:PLACEHOLDER},
+                      {name:'낙찰자 선정',     desc:'적격 판정 업체 중 낙찰자를 선정합니다.',           html:PLACEHOLDER},
+                      {name:'계약 체결',       desc:'낙찰업체와 계약을 체결합니다.',                    html:PLACEHOLDER} ],
+          supplier: [ {name:'공고 탐색',       desc:'적격심사 조건이 포함된 공고를 탐색합니다.',        html:PLACEHOLDER},
+                      {name:'적격 서류 준비',  desc:'적격 심사에 필요한 서류를 준비합니다.',            html:PLACEHOLDER},
+                      {name:'입찰 참여',       desc:'서류를 첨부하여 입찰서를 제출합니다.',             html:PLACEHOLDER},
+                      {name:'심사 결과 확인',  desc:'적격심사 결과와 낙찰 여부를 확인합니다.',          html:PLACEHOLDER},
+                      {name:'납품 처리',       desc:'낙찰 후 납품 처리를 진행합니다.',                  html:PLACEHOLDER} ],
+        },
+        {
+          name: '유찰 후 재공고',
+          school:   [ {name:'유찰 확인',       desc:'유찰 사유를 확인합니다.',                          html:PLACEHOLDER},
+                      {name:'조건 검토',       desc:'입찰 조건을 검토하고 수정합니다.',                  html:PLACEHOLDER},
+                      {name:'재공고 작성',     desc:'수정된 조건으로 재공고를 작성합니다.',             html:PLACEHOLDER},
+                      {name:'재공고 게시',     desc:'재공고를 게시합니다.',                             html:PLACEHOLDER},
+                      {name:'개찰·계약',       desc:'재공고 입찰 결과를 개찰하고 계약합니다.',          html:PLACEHOLDER} ],
+          supplier: [ {name:'재공고 알림',     desc:'유찰 재공고 알림을 수신합니다.',                   html:PLACEHOLDER},
+                      {name:'변경 조건 확인',  desc:'수정된 입찰 조건을 확인합니다.',                   html:PLACEHOLDER},
+                      {name:'투찰',            desc:'재공고에 입찰서를 제출합니다.',                    html:PLACEHOLDER},
+                      {name:'결과 확인',       desc:'개찰 결과를 확인합니다.',                          html:PLACEHOLDER},
+                      {name:'계약·납품',       desc:'낙찰 후 계약 및 납품을 처리합니다.',              html:PLACEHOLDER} ],
+        },
+      ],
+    },
+  };
 
-    function updateFrame() {
-      const path = PREVIEW_MAP[currentService]?.[currentTarget];
-      const wrap = document.getElementById('preview-frame-wrap');
-      if (path) {
-        wrap.innerHTML = `<iframe src="${path}" title="S2B 서비스 미리보기" id="preview-iframe"></iframe>`;
+  // ── 상태 ──────────────────────────────────────────────────────
+  let curService  = 'estimate-info';
+  let curTarget   = 'school';
+  let curScenario = 0;
+  let curStep     = 0;
+
+  // ── 시나리오 리스트 렌더 ─────────────────────────────────────
+  function renderScenarioList() {
+    const scenarios = CONTENT[curService].scenarios;
+    const el = document.getElementById('scenario-list');
+    el.innerHTML = scenarios.map((sc, i) => `
+      <div class="scenario-item${i === curScenario ? ' active' : ''}" data-idx="${i}" title="${sc.name}">
+        ${i + 1}. ${sc.name}
+      </div>`).join('');
+    el.querySelectorAll('.scenario-item').forEach(item => {
+      item.addEventListener('click', () => {
+        curScenario = +item.dataset.idx;
+        curStep = 0;
+        renderScenarioList();
+        render();
+        // 선택된 항목이 보이도록 스크롤
+        item.scrollIntoView({ block: 'nearest' });
+      });
+    });
+  }
+
+  // ── 렌더 ──────────────────────────────────────────────────────
+  function render() {
+    const steps = CONTENT[curService].scenarios[curScenario][curTarget];
+    const step  = steps[curStep];
+    const total = steps.length;
+
+    // 상단 컨텍스트
+    const scenarioName = CONTENT[curService].scenarios[curScenario].name;
+    document.getElementById('ctx-service-name').textContent =
+      `${CONTENT[curService].name}  ›  ${scenarioName}`;
+    const badge = document.getElementById('ctx-target-badge');
+    badge.textContent = curTarget === 'school' ? '수요기관' : '공급업체';
+    badge.className   = `context-badge ${curTarget}`;
+
+    // 단계 표시
+    document.getElementById('top-step-num').textContent  = curStep + 1;
+    document.getElementById('top-total-num').textContent = total;
+    document.getElementById('top-step-name').textContent = step.name;
+    document.getElementById('btn-prev').disabled = curStep === 0;
+    document.getElementById('btn-next').disabled = curStep === total - 1;
+
+    // 콘텐츠
+    document.getElementById('screen-content').innerHTML = step.html;
+
+    // 브라우저 탭 active 동기화
+    document.querySelectorAll('.chrome-tab[data-tab-target]').forEach(t => {
+      t.classList.toggle('active', t.dataset.tabTarget === curTarget);
+    });
+
+    // 스텝바
+    renderStepBar(steps, curStep);
+
+    // 설명
+    document.getElementById('desc-name').textContent = `${curStep + 1}단계: ${step.name}`;
+    document.getElementById('desc-text').textContent = step.desc;
+  }
+
+  function renderStepBar(steps, active) {
+    const el = document.getElementById('step-bar-inner');
+    let html = '';
+    steps.forEach((s, i) => {
+      const cc = i < active ? 'done' : i === active ? 'current' : 'pending';
+      const ic = i < active ? '✓' : i + 1;
+      html += `<div class="step-item${i === active ? ' current-step' : ''}" data-step="${i}">
+        <div class="step-circle ${cc}">${ic}</div>
+        <div class="step-label">${s.name}</div>
+      </div>`;
+      if (i < steps.length - 1) {
+        html += `<div class="step-connector ${i < active ? 'done' : 'pending'}"></div>`;
       }
-    }
-
-    document.getElementById('service-nav')?.querySelectorAll('.preview-nav-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.preview-nav-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentService = btn.dataset.service;
-        updateFrame();
-      });
     });
-
-    document.getElementById('target-tabs')?.querySelectorAll('.preview-target-tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.preview-target-tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        currentTarget = tab.dataset.target;
-        updateFrame();
-      });
+    el.innerHTML = html;
+    el.querySelectorAll('.step-item').forEach(item => {
+      item.addEventListener('click', () => { curStep = +item.dataset.step; render(); });
     });
+  }
+
+  // ── 이벤트 ────────────────────────────────────────────────────
+  document.getElementById('service-tabs').querySelectorAll('.service-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.service-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      curService  = btn.dataset.service;
+      curScenario = 0;
+      curStep     = 0;
+      renderScenarioList();
+      render();
+    });
+  });
+
+
+  document.getElementById('btn-prev').addEventListener('click', () => {
+    if (curStep > 0) { curStep--; render(); }
+  });
+  document.getElementById('btn-next').addEventListener('click', () => {
+    if (curStep < CONTENT[curService][curTarget].length - 1) { curStep++; render(); }
+  });
+
+  // 브라우저 탭 클릭 → 관점 전환 (시나리오 유지, 단계만 초기화)
+  document.querySelectorAll('.chrome-tab[data-tab-target]').forEach(tab => {
+    tab.addEventListener('click', () => {
+      curTarget = tab.dataset.tabTarget;
+      curStep   = 0;
+      render();
+    });
+  });
+
+  renderScenarioList();
+  render();
   </script>
 </body>
 </html>

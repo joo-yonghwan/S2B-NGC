@@ -1,6 +1,6 @@
 {
   "notices": [
-    { "id": 1, "type": "urgent", "title": "긴급공지 제목을 입력하세요", "date": "2026-03-17" },
+    { "id": 1, "type": "urgent", "title": "지금 보고 계시는 [S2B 2.0 이용지원센터]는 내부 관계자의 이해를 돕기 위한 프로토타입입니다.", "date": "2026-03-17" },
     { "id": 2, "type": "notice", "title": "일반 공지 제목을 입력하세요", "date": "2026-03-10" }
   ],
   "projectProgress": {
