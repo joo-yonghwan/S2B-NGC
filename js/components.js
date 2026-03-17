@@ -31,8 +31,8 @@ function renderHeader() {
     <header id="site-header">
       <div class="container">
         <a href="index.html" class="header-logo">
-          <span class="logo-title">S2B NGC</span>
-          <span class="logo-sub">Next Guide Center</span>
+          <span class="logo-title">S2B 2.0 이용지원센터</span>
+          <span class="logo-sub">S2B 2.0 Support Center</span>
         </a>
         <button class="menu-toggle" id="menuToggle" aria-label="메뉴 열기">
           <span></span><span></span><span></span>
@@ -48,8 +48,8 @@ function renderFooter() {
   return `
     <footer id="site-footer">
       <div class="container">
-        <span>S2B Next Guide Center &nbsp;|&nbsp; 변화관리 플랫폼</span>
-        <span class="footer-copy">&copy; ${year} S2B NGC. All rights reserved.</span>
+        <span>S2B 2.0 Support Center &nbsp;|&nbsp; 변화관리 플랫폼</span>
+        <span class="footer-copy">&copy; ${year} S2B 2.0 이용지원센터. All rights reserved.</span>
       </div>
     </footer>
   `;

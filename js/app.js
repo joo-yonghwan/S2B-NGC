@@ -97,9 +97,9 @@ function renderFAQ(containerId, items) {
 }
 
 /**
- * 공지 목록을 렌더링합니다.
+ * 공지 목록을 렌더링합니다. (클릭 시 본문 펼침)
  * @param {string} containerId
- * @param {Array<{type, title, date}>} items
+ * @param {Array<{type, title, date, content}>} items
  * @param {number} limit
  */
 function renderNoticeList(containerId, items, limit = 5) {
@@ -107,12 +107,22 @@ function renderNoticeList(containerId, items, limit = 5) {
   if (!el) return;
   const list = items.slice(0, limit);
   el.innerHTML = `<div class="notice-list">` + list.map(n => `
-    <div class="notice-item">
-      <span class="badge badge-${n.type === 'urgent' ? 'urgent' : 'notice'}">
-        ${n.type === 'urgent' ? '긴급' : '공지'}
-      </span>
-      <span class="notice-title">${n.title}</span>
-      <span class="notice-date">${formatDate(n.date)}</span>
+    <div class="notice-entry">
+      <button class="notice-item" type="button">
+        <span class="badge badge-${n.type === 'urgent' ? 'urgent' : 'notice'}">
+          ${n.type === 'urgent' ? '긴급' : '공지'}
+        </span>
+        <span class="notice-title">${n.title}</span>
+        <span class="notice-date">${formatDate(n.date)}</span>
+        <span class="notice-arrow">▼</span>
+      </button>
+      <div class="notice-body">${n.content ? n.content.replace(/\n/g, '<br>') : ''}</div>
     </div>
   `).join('') + `</div>`;
+
+  el.querySelectorAll('.notice-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.closest('.notice-entry').classList.toggle('open');
+    });
+  });
 }
