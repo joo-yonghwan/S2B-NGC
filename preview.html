@@ -21,14 +21,14 @@
 
     /* ── 선택 영역 ── */
     .selection-bar {
-      display:flex; align-items:stretch; gap:20px;
+      display:flex; align-items:flex-start; gap:20px;
       background:var(--color-surface);
       border:1px solid var(--color-border);
       border-radius:var(--radius-md) var(--radius-md) 0 0;
       padding:16px 20px;
     }
     .selection-left  { flex:1; min-width:0; }
-    .selection-right { flex-shrink:0; width:260px; display:flex; flex-direction:column; }
+    .selection-right { flex-shrink:0; width:260px; }
     .selection-label {
       font-size:.78rem; font-weight:700; color:var(--color-text-muted);
       text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px;
@@ -44,7 +44,7 @@
 
     /* ── 시나리오 리스트박스 ── */
     .scenario-list {
-      flex:1; min-height:80px; overflow-y:auto;
+      height:160px; overflow-y:auto;
       border:1.5px solid var(--color-border); border-radius:var(--radius-sm);
       background:#fff;
     }
@@ -191,7 +191,7 @@
       background:var(--color-surface); border:1px solid var(--color-border);
       border-radius:0 0 var(--radius-md) var(--radius-md); padding:16px;
     }
-    .step-bar { display:flex; justify-content:center; margin-bottom:0; margin-top:16px; overflow-x:auto; }
+    .step-bar { display:flex; justify-content:center; margin-bottom:14px; }
     .step-bar-inner { display:flex; align-items:flex-start; }
     .step-item { display:flex; flex-direction:column; align-items:center; cursor:pointer; }
     .step-connector { width:72px; height:2px; margin-top:17px; flex-shrink:0; transition:background .3s; }
@@ -265,7 +265,6 @@
               <button class="service-tab" data-service="notice">안내공고</button>
               <button class="service-tab" data-service="bid">입찰</button>
             </div>
-            <div class="step-bar"><div class="step-bar-inner" id="step-bar-inner"></div></div>
           </div>
           <div class="selection-right">
             <div class="selection-label">시나리오 선택</div>
@@ -334,6 +333,7 @@
 
         <!-- 하단 바 -->
         <div class="tour-bottombar">
+          <div class="step-bar"><div class="step-bar-inner" id="step-bar-inner"></div></div>
           <div class="step-desc-box">
             <span class="step-desc-name" id="desc-name"></span>
             <span id="desc-text"></span>
